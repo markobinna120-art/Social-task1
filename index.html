@@ -9,11 +9,13 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:#f5f7fb;color:#222}
-.top{background:#0a7e07;color:#fff;padding:10px 15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.top{background:#0a7e07;color:#fff;padding:10px 15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:11}
 .top-left{display:flex;align-items:center;gap:10px}
 .app-logo-img{width:42px;height:42px;border-radius:50%;border:2px solid #fff;background:#000;object-fit:cover}
 .menu-btn{width:35px;height:28px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;padding:3px}
 .menu-btn span{display:block;height:4px;background:#fff;border-radius:3px;width:100%}
+.join-banner{background:#25D366;color:#fff;padding:10px 15px;text-align:center;position:sticky;top:56px;z-index:10;display:flex;justify-content:center;align-items:center;gap:8px}
+.join-banner a{background:#fff;color:#25D366;padding:6px 12px;border-radius:20px;text-decoration:none;font-weight:bold;font-size:13px}
 #sideMenu{position:fixed;top:0;left:-260px;width:250px;height:100%;background:#fff;box-shadow:2px 0 10px rgba(0,0,0,.2);z-index:20;transition:.3s;padding:20px}
 #sideMenu.active{left:0}
 #sideMenu a{display:block;padding:12px 0;border-bottom:1px solid #eee;text-decoration:none;color:#222;font-weight:600}
@@ -23,13 +25,12 @@ body{background:#f5f7fb;color:#222}
 .bal b{color:#0a7e07;font-size:18px}
 .btn{background:#0a7e07;color:#fff;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;width:100%;margin-top:8px;font-weight:bold;font-size:16px}
 .btn2{background:#222}
-.btn-big{padding:16px;font-size:18px;margin:6px 0;width:48%;display:inline-block}
 .btn-approve{background:#0a7e07;color:#fff;padding:14px 20px;border:none;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer;margin:5px}
 .btn-reject{background:#d32f2f;color:#fff;padding:14px 20px;border:none;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer;margin:5px}
 .input{width:100%;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px}
 .task{border:1px solid #eee;padding:12px;border-radius:10px;margin:8px 0;display:flex;gap:10px;align-items:center}
 .logo{width:45px;height:45px;border-radius:50%;background:#fff;border:1px solid #eee;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.logo img{width:28px;height:28px;object-fit:contain}
+.logo img{width:100%;height:100%;object-fit:cover}
 .popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:30;padding:15px}
 .hidden{display:none}
 .badge{font-size:12px;padding:3px 8px;border-radius:10px;background:#e8f5e9;color:#0a7e07}
@@ -37,12 +38,14 @@ body{background:#f5f7fb;color:#222}
 </head>
 <body>
 <div class="top"><div class="top-left"><img src="logo.png" class="app-logo-img" alt="Logo"><div><b style="font-size:18px">Social Task</b><br><small style="font-size:10px;opacity:.9">COMPLETE TASKS • EARN REWARDS</small></div></div><div class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span></div></div>
+<div class="join-banner">💬 Join Our Official Group <a href="https://chat.whatsapp.com/LYlXUpdqiL24XQ42rtZCl1?s=cl&p=a&mlu=4&ilr=4" target="_blank">Join WhatsApp</a></div>
 <div id="sideMenu">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:15px"><img src="logo.png" style="width:40px;height:40px;border-radius:50%"><b>Social Task</b></div>
 <h3>Menu</h3>
 <a href="#" onclick="showPage('home');toggleMenu()">Home</a>
 <a href="#" onclick="showPage('tasks');toggleMenu()">Tasks</a>
 <a href="#" onclick="showPage('post');toggleMenu()">Post Task</a>
+<a href="https://chat.whatsapp.com/LYlXUpdqiL24XQ42rtZCl1?s=cl&p=a&mlu=4&ilr=4" target="_blank" style="color:#25D366">💬 Join WhatsApp Group</a>
 <a href="#" id="adminLink" class="hidden" onclick="showPage('admin');toggleMenu()">Admin Panel</a>
 <a href="#" onclick="logout()">Logout</a>
 </div>
@@ -80,7 +83,7 @@ body{background:#f5f7fb;color:#222}
 <small>Bank: Moniepoint - 5895097608 - Ugochi Patricia</small><br>
 <button class="btn" onclick="showPage('deposit')" style="margin-top:8px">Deposit Now</button>
 </div>
-<label style="font-weight:bold">1. Choose App (Click Logo)</label>
+<label style="font-weight:bold">1. Choose App (Click Real Logo)</label>
 <div id="appGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0"></div>
 <p id="selectedAppText" style="font-weight:bold;color:#0a7e07;margin:5px 0"></p>
 <label>2. Task Type</label>
@@ -134,4 +137,3 @@ body{background:#f5f7fb;color:#222}
 <script src="app.js"></script>
 </body>
   </html>
-  
