@@ -28,6 +28,7 @@ body{background:#f2f4f7;color:#222}
 .bal b{color:#0a7e07;font-size:20px}
 .btn{background:#0a7e07;color:#fff;border:none;padding:13px;border-radius:10px;width:100%;font-weight:bold;font-size:15px;cursor:pointer;margin-top:8px}
 .btn2{background:#222}
+.btn-outline{background:#fff;color:#0a7e07;border:2px solid #0a7e07}
 .btn-approve{background:#0a7e07;color:#fff;padding:12px 18px;border:none;border-radius:8px;font-weight:bold;margin:4px;cursor:pointer}
 .btn-reject{background:#e53935;color:#fff;padding:12px 18px;border:none;border-radius:8px;font-weight:bold;margin:4px;cursor:pointer}
 .input{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin:6px 0}
@@ -37,6 +38,10 @@ body{background:#f2f4f7;color:#222}
 .popup{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:15px}
 .hidden{display:none}
 .badge{background:#e8f5e9;color:#0a7e07;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:bold}
+.auth-tab{display:flex;gap:10px;margin-bottom:12px}
+.auth-tab button{flex:1;padding:12px;border-radius:10px;font-weight:bold;cursor:pointer}
+.active{background:#0a7e07;color:#fff;border:2px solid #0a7e07}
+.inactive{background:#fff;color:#0a7e07;border:2px solid #0a7e07}
 </style>
 </head>
 <body>
@@ -47,20 +52,25 @@ body{background:#f2f4f7;color:#222}
 <a href="#" onclick="showPage('home');toggleMenu()">🏠 Dashboard</a>
 <a href="#" onclick="showPage('tasks');toggleMenu()">📋 All Tasks</a>
 <a href="#" onclick="showPage('post');toggleMenu()">➕ Post Task</a>
-<a href="#" onclick="showPage('deposit');toggleMenu()">💰 Deposit - Balance ₦0</a>
-<a href="https://chat.whatsapp.com/LYlXUpdqiL24XQ42rtZCl1?s=cl&p=a&mlu=4&ilr=4" target="_blank" style="color:#25D366">💬 Join WhatsApp Group</a>
+<a href="#" onclick="showPage('deposit');toggleMenu()">💰 Deposit - ₦0</a>
+<a href="https://chat.whatsapp.com/LYlXUpdqiL24XQ42rtZCl1?s=cl&p=a&mlu=4&ilr=4" target="_blank" style="color:#25D366">💬 Join Group</a>
 <a href="#" id="adminLink" class="hidden" style="display:none" onclick="showPage('admin');toggleMenu()">👑 Admin Panel</a>
 <a href="#" onclick="logout()">🚪 Logout</a>
 </div>
 <div id="auth" class="card" style="margin-top:20px;text-align:center">
 <img src="logo.png" style="width:90px;height:90px;border-radius:50%;margin:auto;display:block;border:3px solid #0a7e07">
 <h2>social-task1</h2><small>Complete Tasks • Earn Rewards</small>
-<div style="text-align:left;margin-top:15px">
-<input id="aUser" class="input" placeholder="Username">
+<div class="auth-tab" style="margin-top:15px">
+<button id="tabSignIn" class="active" onclick="setAuthMode('signin')">Sign In</button>
+<button id="tabSignUp" class="inactive" onclick="setAuthMode('signup')">Sign Up</button>
+</div>
+<div style="text-align:left">
+<input id="aUser" class="input hidden" placeholder="Username (for Sign Up)">
 <input id="aEmail" class="input" placeholder="Email">
 <input id="aPass" class="input" type="password" placeholder="Password">
 <input id="aCode" class="input hidden" placeholder="Enter email code">
-<button class="btn" id="authBtn" onclick="handleAuth()">Send Code</button>
+<button class="btn" id="authBtn" onclick="handleAuth()">Sign In</button>
+<button class="btn btn-outline" id="switchBtn" onclick="toggleAuthMode()" style="margin-top:8px">Don't have account? Sign Up</button>
 <p id="emailStatus" style="font-size:12px;color:green;margin-top:8px"></p>
 </div>
 </div>
@@ -78,9 +88,9 @@ body{background:#f2f4f7;color:#222}
 <h3>Post New Task</h3>
 <div style="background:#fff8e1;padding:12px;border-radius:10px;margin-bottom:12px;border:1px solid #ffe082">
 <b>Your Deposit Balance: <span id="postDep">₦0</span> (Starts at 0)</b><br><small>Bank: Moniepoint 5895097608 - Ugochi Patricia</small><br>
-<button class="btn" onclick="showPage('deposit')" style="margin-top:8px">Fund Wallet - Deposit ₦0</button>
+<button class="btn" onclick="showPage('deposit')" style="margin-top:8px">Fund Wallet</button>
 </div>
-<label><b>1. Select Platform - Click Real Logo</b></label>
+<label><b>1. Select Platform - Click Logo</b></label>
 <div id="appGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0"></div>
 <p id="selectedAppText" style="color:#0a7e07;font-weight:bold;margin-bottom:8px"></p>
 <label>Task Type</label><select id="pType" class="input"></select>
@@ -93,14 +103,14 @@ body{background:#f2f4f7;color:#222}
 
 <div id="deposit" class="hidden">
 <div class="card"><h3>Deposit Funds - Balance ₦0</h3><p>Bank: Moniepoint<br>Acc: <b>5895097608</b><br>Name: <b>Ugochi Patricia Etumugo</b></p>
-<p style="background:#e8f5e9;padding:8px;border-radius:8px">Current Balance: <b>₦0</b> - Deposit to post tasks</p>
+<p style="background:#e8f5e9;padding:8px;border-radius:8px">Current Balance: <b>₦0</b></p>
 <input id="dName" class="input" placeholder="Sender account name"><input id="dAmt" type="number" class="input" placeholder="Amount you sent"><button class="btn" onclick="submitDeposit()">I Have Paid</button></div>
 <div class="card"><h4>My Deposits</h4><div id="myDeposits"></div></div>
 </div>
 
 <div id="admin" class="hidden">
-<div class="card" style="border:2px solid #0a7e07"><h3>👑 Admin Panel - ONLY markobinna120@gmail.com</h3><small>Hidden from other users menu</small><br><br>
-<button class="btn" onclick="showAdmin('users')">Users</button>
+<div class="card" style="border:2px solid #0a7e07"><h3>👑 Admin Panel - ONLY markobinna120@gmail.com</h3><small>Hidden from others menu - With Temp & Permanent Delete</small><br><br>
+<button class="btn" onclick="showAdmin('users')">Users (Temp/Perm Delete)</button>
 <button class="btn btn2" onclick="showAdmin('allTasksAdmin')">All Tasks</button>
 <button class="btn btn2" onclick="showAdmin('proofs')">Proofs</button>
 <button class="btn btn2" onclick="showAdmin('depositsAdmin')">Deposits</button>
@@ -115,6 +125,19 @@ body{background:#f2f4f7;color:#222}
 <div id="popCustomList" style="background:#f5f5f5;padding:8px;border-radius:8px;margin:8px 0;font-size:13px"></div>
 <button class="btn" onclick="submitProof()">Submit & Delete From Feed</button><button class="btn btn2" onclick="closePopup('taskPopup')">Close</button>
 </div></div>
+
+<div id="lowBalPopup" class="popup"><div class="card" style="width:100%;max-width:380px;text-align:center;border:2px solid #e53935">
+<div style="width:70px;height:70px;background:#ffebee;border-radius:50%;margin:auto;display:flex;align-items:center;justify-content:center;font-size:40px">⚠️</div>
+<h2 style="color:#e53935;margin-top:12px">Low Balance!</h2>
+<p id="lowBalText" style="margin:12px 0;font-size:14px;background:#fff3cd;padding:12px;border-radius:8px"></p>
+<p style="font-size:13px;color:#555">Your current deposit balance is <b>₦0</b>. Please fund your wallet to post tasks.</p>
+<div style="background:#f5f5f5;padding:10px;border-radius:8px;margin:10px 0;text-align:left;font-size:13px">
+<b>Bank: Moniepoint</b><br>Acc: <b>5895097608</b><br>Name: <b>Ugochi Patricia Etumugo</b>
+</div>
+<button class="btn" onclick="goToDepositFromLowBal()">💰 Fund Wallet Now</button>
+<button class="btn btn2" onclick="closePopup('lowBalPopup')" style="margin-top:8px">Close</button>
+</div></div>
+
 <script src="app.js"></script>
 </body>
-                                                             </html>
+    </html>
