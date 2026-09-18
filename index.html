@@ -3,12 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MarkTasks - Social Earning</title>
+<title>Social Task - Complete Tasks • Earn Rewards</title>
+<link rel="icon" href="logo.png">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:#f5f7fb;color:#222}
-.top{background:#0a7e07;color:#fff;padding:15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
-.menu-btn{font-size:28px;cursor:pointer;letter-spacing:2px;font-weight:bold}
+.top{background:#0a7e07;color:#fff;padding:10px 15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.top-left{display:flex;align-items:center;gap:10px}
+.app-logo-img{width:42px;height:42px;border-radius:50%;border:2px solid #fff;background:#000;object-fit:cover}
+.menu-btn{width:35px;height:28px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;padding:3px}
+.menu-btn span{display:block;height:4px;background:#fff;border-radius:3px;width:100%}
 #sideMenu{position:fixed;top:0;left:-260px;width:250px;height:100%;background:#fff;box-shadow:2px 0 10px rgba(0,0,0,.2);z-index:20;transition:.3s;padding:20px}
 #sideMenu.active{left:0}
 #sideMenu a{display:block;padding:12px 0;border-bottom:1px solid #eee;text-decoration:none;color:#222;font-weight:600}
@@ -16,105 +21,105 @@ body{background:#f5f7fb;color:#222}
 .bal{display:flex;gap:10px;margin:15px 0}
 .bal div{flex:1;background:#fff;padding:12px;border-radius:10px;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,.08)}
 .bal b{color:#0a7e07;font-size:18px}
-.btn{background:#0a7e07;color:#fff;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;width:100%;margin-top:8px;font-weight:bold}
+.btn{background:#0a7e07;color:#fff;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;width:100%;margin-top:8px;font-weight:bold;font-size:16px}
 .btn2{background:#222}
+.btn-big{padding:16px;font-size:18px;margin:6px 0;width:48%;display:inline-block}
+.btn-approve{background:#0a7e07;color:#fff;padding:14px 20px;border:none;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer;margin:5px}
+.btn-reject{background:#d32f2f;color:#fff;padding:14px 20px;border:none;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer;margin:5px}
 .input{width:100%;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px}
 .task{border:1px solid #eee;padding:12px;border-radius:10px;margin:8px 0;display:flex;gap:10px;align-items:center}
-.logo{width:45px;height:45px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;font-size:22px}
+.logo{width:45px;height:45px;border-radius:50%;background:#fff;border:1px solid #eee;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.logo img{width:28px;height:28px;object-fit:contain}
 .popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:30;padding:15px}
 .hidden{display:none}
 .badge{font-size:12px;padding:3px 8px;border-radius:10px;background:#e8f5e9;color:#0a7e07}
 </style>
 </head>
 <body>
-<div class="top">
-<div><b>MarkTasks</b></div>
-<div class="menu-btn" onclick="toggleMenu()">___</div>
-</div>
+<div class="top"><div class="top-left"><img src="logo.png" class="app-logo-img" alt="Logo"><div><b style="font-size:18px">Social Task</b><br><small style="font-size:10px;opacity:.9">COMPLETE TASKS • EARN REWARDS</small></div></div><div class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span></div></div>
 <div id="sideMenu">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:15px"><img src="logo.png" style="width:40px;height:40px;border-radius:50%"><b>Social Task</b></div>
 <h3>Menu</h3>
 <a href="#" onclick="showPage('home');toggleMenu()">Home</a>
 <a href="#" onclick="showPage('tasks');toggleMenu()">Tasks</a>
 <a href="#" onclick="showPage('post');toggleMenu()">Post Task</a>
-<a href="#" onclick="showPage('deposit');toggleMenu()">Deposit</a>
 <a href="#" id="adminLink" class="hidden" onclick="showPage('admin');toggleMenu()">Admin Panel</a>
 <a href="#" onclick="logout()">Logout</a>
 </div>
-<div id="auth" class="card" style="margin-top:40px">
-<h2>Sign Up - Verify Email</h2>
+<div id="auth" class="card" style="margin-top:20px;text-align:center">
+<img src="logo.png" style="width:90px;height:90px;border-radius:50%;margin:0 auto;display:block;border:3px solid #0a7e07">
+<h2 style="margin-top:10px">Social Task</h2><small>Complete Tasks • Earn Rewards</small>
+<div style="text-align:left;margin-top:15px">
 <input id="aUser" class="input" placeholder="Username">
 <input id="aEmail" class="input" placeholder="Email">
 <input id="aPass" class="input" type="password" placeholder="Password">
-<input id="aCode" class="input hidden" placeholder="Enter 6-digit code">
-<button class="btn" id="authBtn" onclick="handleAuth()">Send Code</button>
+<input id="aCode" class="input hidden" placeholder="Enter code from your email">
+<button class="btn" id="authBtn" onclick="handleAuth()">Send Code to Email</button>
+<p id="emailStatus" style="font-size:12px;color:green;margin-top:8px"></p>
+</div>
 </div>
 <div id="home" class="hidden">
 <div class="bal">
 <div><small>Available</small><br><b id="avBal">₦0</b></div>
 <div><small>Pending</small><br><b id="pdBal">₦0</b></div>
-<div><small>Deposit</small><br><b id="dpBal">₦0</b></div>
 </div>
-<div class="card">
-<h3>Available Tasks <button onclick="showPage('tasks')" style="float:right;font-size:12px">View All</button></h3>
-<div id="homeTasks"></div>
-</div>
+<div class="card"><h3>Available Tasks <button onclick="showPage('tasks')" style="float:right;font-size:12px">View All</button></h3><div id="homeTasks"></div></div>
   </div>
   <div id="tasks" class="hidden">
-<div class="card">
-<h3>All Tasks</h3>
-<div id="allTasks"></div>
+<div class="card"><h3>All Tasks</h3><div id="allTasks"></div>
 <div style="display:flex;gap:10px;margin-top:10px">
 <button class="btn btn2" id="prevBtn" onclick="changePage(-1)">Previous</button>
 <button class="btn" id="nextBtn" onclick="changePage(1)">Next</button>
-</div>
-</div>
-</div>
+</div></div></div>
+
 <div id="post" class="hidden">
 <div class="card">
-<h3>Post Task</h3>
-<p style="font-size:13px">Deposit: <b id="postDep">₦0</b> <a href="#" onclick="showPage('deposit')">Deposit Now</a></p>
-<label>Task App Name</label>
-<select id="pApp" class="input" onchange="loadTypes()"></select>
-<label>Task Type</label>
-<select id="pType" class="input" onchange="checkCustom()"></select>
-<div id="customBox" class="hidden">
-<label>Custom Comments</label>
-<textarea id="pCustom" class="input" rows="3"></textarea>
+<h3>Post New Task</h3>
+<div style="background:#fff3cd;padding:12px;border-radius:8px;margin-bottom:15px">
+<b>Your Deposit: <span id="postDep">₦0</span></b><br>
+<small>Bank: Moniepoint - 5895097608 - Ugochi Patricia</small><br>
+<button class="btn" onclick="showPage('deposit')" style="margin-top:8px">Deposit Now</button>
 </div>
-<label>Task Link / Group Link</label>
+<label style="font-weight:bold">1. Choose App (Click Logo)</label>
+<div id="appGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0"></div>
+<p id="selectedAppText" style="font-weight:bold;color:#0a7e07;margin:5px 0"></p>
+<label>2. Task Type</label>
+<select id="pType" class="input"></select>
+<label>3. Task Link / Group Link</label>
 <input id="pLink" class="input" placeholder="https://...">
-<label>Instruction (video = 30 sec)</label>
-<input id="pInst" class="input" value="You must watch at least 30 seconds, like and screenshot">
-<label>Quantity</label>
+<label>4. Quantity</label>
 <input id="pQty" type="number" class="input" value="10">
-<p id="priceInfo" style="font-size:13px;margin:8px 0"></p>
+<p id="priceInfo" style="font-size:13px;margin:8px 0;background:#e8f5e9;padding:8px;border-radius:6px"></p>
 <button class="btn" onclick="createTask()">Post Task</button>
 </div>
 </div>
+
 <div id="deposit" class="hidden">
 <div class="card">
 <h3>Deposit to Post Tasks</h3>
 <p>Bank: <b>Moniepoint</b><br>Account: <b>5895097608</b><br>Name: <b>Ugochi Patricia Etumugo</b></p>
-<input id="dName" class="input" placeholder="Your account name">
-<input id="dAmt" type="number" class="input" placeholder="Amount">
+<input id="dName" class="input" placeholder="Your account name that sent money">
+<input id="dAmt" type="number" class="input" placeholder="Amount deposited">
 <button class="btn" onclick="submitDeposit()">I Have Sent It</button>
 </div>
 <div class="card"><h4>My Deposit Requests</h4><div id="myDeposits"></div></div>
 </div>
+
 <div id="admin" class="hidden">
 <div class="card">
-<h3>Admin - markobinna120@gmail.com</h3>
-<button class="btn btn2" onclick="showAdmin('users')">Users</button>
+<h3>Admin - markobinna120@gmail.com ONLY</h3>
+<button class="btn" onclick="showAdmin('users')">Users</button>
 <button class="btn btn2" onclick="showAdmin('allTasksAdmin')">Tasks</button>
 <button class="btn btn2" onclick="showAdmin('proofs')">Proofs</button>
 <button class="btn btn2" onclick="showAdmin('depositsAdmin')">Deposits</button>
 </div>
 <div class="card" id="adminContent"></div>
 </div>
+
 <div id="taskPopup" class="popup">
 <div class="card">
 <h3 id="popTitle"></h3>
-<p id="popInfo" style="font-size:13px;margin:8px 0"></p>
+<p id="popInfo" style="font-size:14px;margin:10px 0;background:#fff3cd;padding:10px;border-radius:8px" class="hidden"></p>
 <a id="popLink" target="_blank" class="btn" style="display:block;text-align:center;text-decoration:none">View Task</a>
 <hr style="margin:12px 0">
 <label>Your Social Handle</label>
@@ -129,3 +134,4 @@ body{background:#f5f7fb;color:#222}
 <script src="app.js"></script>
 </body>
   </html>
+  
