@@ -1,208 +1,248 @@
-const PRICES={
-"Like":{adv:11,earn:4},"Follow":{adv:11,earn:5},"Comment":{adv:11,earn:5},"Custom Comment":{adv:50,earn:10},
-"Share":{adv:11,earn:4},"Group Join":{adv:17,earn:7},"Channel Follow":{adv:17,earn:7},"Start Bot":{adv:20,earn:10},"Video View":{adv:12,earn:3},
-"Website Signup":{adv:30,earn:10},"Website Vote":{adv:30,earn:7},"Website Visit":{adv:30,earn:3}
-};
+emailjs.init("qGk8j7T1Xc9v3m2p");
+const SERVICE_ID="service_4x6a8nq";
+const TEMPLATE_ID="template_9b2c1d";
+const ADMIN="markobinna120@gmail.com";
 const APPS=[
-{ id:"Facebook",icon:"📘" },{id:"Instagram",icon:"📸"},{id:"TikTok",icon:"🎵"},{id:"YouTube",icon:"▶️"},
-{id:"Twitter/X",icon:"🐦"},{id:"WhatsApp",icon:"💬"},{id:"Telegram",icon:"✈️"},{id:"Website",icon:"🌐"}
+{ id:"Facebook",icon:"📘", logo:"facebook.png" },
+{ id:"Instagram",icon:"📸", logo:"https://cdn.simpleicons.org/instagram/E4405F" },
+{ id:"TikTok",icon:"🎵", logo:"https://cdn.simpleicons.org/tiktok/000000" },
+{ id:"YouTube",icon:"▶️", logo:"https://cdn.simpleicons.org/youtube/FF0000" },
+{ id:"Twitter/X",icon:"🐦", logo:"https://cdn.simpleicons.org/x/000000" },
+{ id:"WhatsApp",icon:"💬", logo:"https://cdn.simpleicons.org/whatsapp/25D366" },
+{ id:"Telegram",icon:"✈️", logo:"https://cdn.simpleicons.org/telegram/26A5E4" },
+{ id:"Website",icon:"🌐", logo:"https://cdn.simpleicons.org/googlechrome/4285F4" }
 ];
-let currentUser=null, tempCode=null, curTask=null, page=1;
+const PRICES={"Like":{adv:30,earn:20},"Follow":{adv:35,earn:25},"Comment":{adv:40,earn:25},"Custom Comment":{adv:50,earn:30},"Share":{adv:40,earn:25},"Video View":{adv:35,earn:25},"Group Join":{adv:50,earn:30},"Channel Follow":{adv:50,earn:30},"Website Signup":{adv:80,earn:50},"Website Vote":{adv:60,earn:40},"Website Visit":{adv:30,earn:20},"Start Bot":{adv:50,earn:30}};
+let curUser=null,curTask=null,currentPage=1,perPage=10,selectedApp="Facebook";
 function init(){
 let users=JSON.parse(localStorage.getItem('mt_users')||'[]');
-if(!users.find(u=>u.email==='markobinna120@gmail.com')){
-users.push({email:'markobinna120@gmail.com',username:'Admin Mark',password:'admin123',status:'active',av:0,pd:0,dep:100000});
+if(!users.find(u=>u.email===ADMIN)){
+users.push({email:ADMIN,username:'Admin Mark',password:'',status:'active',av:0,pd:0,dep:0});
 localStorage.setItem('mt_users',JSON.stringify(users));
 }
-let appsel=document.getElementById('pApp');
-APPS.forEach(a=>{ let o=document.createElement('option');o.value=a.id;o.textContent=a.icon+' '+a.id;appsel.appendChild(o)});
-loadTypes(); checkLogin();
+let grid=document.getElementById('appGrid');
+if(grid){
+grid.innerHTML='';
+APPS.forEach(a=>{
+let div=document.createElement('div');
+div.style.cssText='background:#fff;border:2px solid #eee;border-radius:14px;padding:10px;text-align:center;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,.05)';
+div.innerHTML=`<img src="${a.logo}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;background:#fff"><br><small style="font-size:11px;font-weight:bold">${a.id}</small>`;
+div.onclick=()=>selectApp(a.id);
+div.id='app_'+a.id;
+grid.appendChild(div);
+});
+selectApp('Facebook');
+}
+checkLogin();
+}
+function selectApp(id){
+selectedApp=id;
+document.querySelectorAll('#appGrid div').forEach(d=>d.style.borderColor='#eee');
+let el=document.getElementById('app_'+id);
+if(el) el.style.borderColor='#0a7e07';
+document.getElementById('selectedAppText').textContent='Selected: '+id+' ✓';
+loadTypes();
 }
 function loadTypes(){
-let app=document.getElementById('pApp').value;
-let typeSel=document.getElementById('pType'); typeSel.innerHTML='';
+let typeSel=document.getElementById('pType'); if(!typeSel) return;
+typeSel.innerHTML='';
 let opts=[];
-if(app==='Website') opts=["Website Signup","Website Vote","Website Visit"];
-else if(app==='WhatsApp') opts=["Group Join","Channel Follow"];
-else if(app==='Telegram') opts=["Group Join","Channel Follow","Start Bot","Like","Follow"];
+if(selectedApp==='Website') opts=["Website Signup","Website Vote","Website Visit"];
+else if(selectedApp==='WhatsApp') opts=["Group Join","Channel Follow"];
+else if(selectedApp==='Telegram') opts=["Group Join","Channel Follow","Start Bot","Like","Follow"];
 else opts=["Like","Follow","Comment","Custom Comment","Share","Video View","Group Join","Channel Follow"];
 opts.forEach(o=>{ let el=document.createElement('option');el.value=o;el.textContent=o+' - Adv ₦'+PRICES[o].adv+' / Earn ₦'+PRICES[o].earn;typeSel.appendChild(el)});
-updatePrice();
-}
-function checkCustom(){
-let t=document.getElementById('pType').value;
-document.getElementById('customBox').classList.toggle('hidden',t!=='Custom Comment');
+typeSel.onchange=updatePrice;
+document.getElementById('pQty').oninput=updatePrice;
 updatePrice();
 }
 function updatePrice(){
-let t=document.getElementById('pType').value, q=document.getElementById('pQty').value||0;
-if(PRICES[t]) document.getElementById('priceInfo').textContent=`You pay ₦${PRICES[t].adv} x ${q} = ₦${PRICES[t].adv*q} | Earners get ₦${PRICES[t].earn} each`;
-}
-document.getElementById('pQty').addEventListener('input',updatePrice);
-document.getElementById('pType').addEventListener('change',updatePrice);
-function handleAuth(){
-let email=document.getElementById('aEmail').value.trim().toLowerCase();
-let user=document.getElementById('aUser').value.trim();
-let pass=document.getElementById('aPass').value;
-let codeInput=document.getElementById('aCode');
-if(!email||!pass||!user) return alert('Fill all');
-if(codeInput.classList.contains('hidden')){
-tempCode=Math.floor(100000+Math.random()*900000);
-alert('Your verification code is: '+tempCode);
-codeInput.classList.remove('hidden');
-document.getElementById('authBtn').textContent='Verify & Sign Up / Login';
-}else{
-if(codeInput.value!=tempCode) return alert('Wrong code');
-let users=JSON.parse(localStorage.getItem('mt_users')||'[]');
-let u=users.find(x=>x.email===email);
-if(u){
-if(u.status==='temp'){ let until=new Date(u.until); if(new Date()<until) return alert('Your account has been disabled and will be enabled in the next 7 days'); else{ u.status='active'; } }
-if(u.status==='banned') return alert('Your account has been banned');
-if(u.password!==pass) return alert('Wrong password');
-}else{
-users.push({email,username:user,password:pass,status:'active',av:0,pd:0,dep:0});
-localStorage.setItem('mt_users',JSON.stringify(users));
-u=users.find(x=>x.email===email);
-}
-localStorage.setItem('mt_cur',email);
-checkLogin();
-}
-}   
+let type=document.getElementById('pType').value;
+let qty=parseInt(document.getElementById('pQty').value)||0;
+if(!PRICES[type]) return;
+let total=PRICES[type].adv*qty;
+document.getElementById('priceInfo').innerHTML=`You pay ₦${total} (Adv ₦${PRICES[type].adv} each) • User earns ₦${PRICES[type].earn} each<br>Need deposit balance ≥ ₦${total}`;
+ }
 function checkLogin(){
 let email=localStorage.getItem('mt_cur');
-if(!email) return;
+if(!email){showAuth();return;}
 let users=JSON.parse(localStorage.getItem('mt_users')||'[]');
-let u=users.find(x=>x.email===email);
-if(!u) return;
-currentUser=u;
+curUser=users.find(u=>u.email===email);
+if(!curUser){showAuth();return;}
 document.getElementById('auth').classList.add('hidden');
-['home','tasks','post','deposit'].forEach(id=>document.getElementById(id).classList.remove('hidden'));
-showPage('home');
-document.getElementById('adminLink').classList.toggle('hidden',email!=='markobinna120@gmail.com');
-refreshHome();
+document.getElementById('home').classList.remove('hidden');
+document.getElementById('avBal').textContent='₦'+(curUser.av||0);
+document.getElementById('pdBal').textContent='₦'+(curUser.pd||0);
+document.getElementById('postDep').textContent='₦'+(curUser.dep||0);
+if(curUser.email===ADMIN) document.getElementById('adminLink').classList.remove('hidden');
+loadHomeTasks(); loadAllTasks(); loadMyDeposits();
 }
+function showAuth(){document.getElementById('auth').classList.remove('hidden');document.getElementById('home').classList.add('hidden');}
+function toggleMenu(){document.getElementById('sideMenu').classList.toggle('active')}
 function showPage(p){
-['home','tasks','post','deposit','admin'].forEach(x=>document.getElementById(x).classList.add('hidden'));
-document.getElementById(p).classList.remove('hidden');
-if(p==='home') refreshHome();
-if(p==='tasks') renderTasks();
-if(p==='post') { document.getElementById('postDep').textContent='₦'+currentUser.dep; }
-if(p==='deposit') renderMyDeposits();
+['home','tasks','post','deposit','admin'].forEach(id=>{let el=document.getElementById(id); if(el) el.classList.add('hidden')});
+let t=document.getElementById(p); if(t) t.classList.remove('hidden');
+if(p==='tasks') loadAllTasks();
+if(p==='deposit') loadMyDeposits();
+if(p==='post') document.getElementById('postDep').textContent='₦'+(curUser.dep||0);
 }
-function toggleMenu(){ document.getElementById('sideMenu').classList.toggle('active'); }
-function refreshHome(){
-document.getElementById('avBal').textContent='₦'+currentUser.av;
-document.getElementById('pdBal').textContent='₦'+currentUser.pd;
-document.getElementById('dpBal').textContent='₦'+currentUser.dep;
-let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]').slice(0,3);
-document.getElementById('homeTasks').innerHTML=tasks.map(t=>taskHtml(t)).join('')||'No tasks yet';
+let codeSent=''; let tempData={};
+async function handleAuth(){
+let user=document.getElementById('aUser').value.trim();
+let email=document.getElementById('aEmail').value.trim();
+let pass=document.getElementById('aPass').value.trim();
+let codeInput=document.getElementById('aCode');
+if(!codeInput.classList.contains('hidden')){
+if(document.getElementById('aCode').value.trim()!==codeSent){alert('Wrong code');return;}
+let users=JSON.parse(localStorage.getItem('mt_users')||'[]');
+if(tempData.mode==='signup'){
+users.push({email:tempData.email,username:tempData.user,password:tempData.pass,status:'active',av:0,pd:0,dep:0});
+localStorage.setItem('mt_users',JSON.stringify(users));
 }
+localStorage.setItem('mt_cur',tempData.email);
+location.reload();
+return;
+}
+if(!user||!email||!pass){alert('Fill all');return;}
+let users=JSON.parse(localStorage.getItem('mt_users')||'[]');
+let exists=users.find(u=>u.email===email);
+tempData={user,email,pass};
+if(exists){tempData.mode='login'; if(exists.password!==pass){alert('Wrong password');return;}}
+else tempData.mode='signup';
+codeSent=Math.floor(100000+Math.random()*900000).toString();
+document.getElementById('emailStatus').textContent='Sending code...';
+try{
+await emailjs.send(SERVICE_ID,TEMPLATE_ID,{to_email:email,code:codeSent,username:user});
+document.getElementById('emailStatus').textContent='Code sent to '+email;
+codeInput.classList.remove('hidden');
+document.getElementById('authBtn').textContent='Verify Code & Login';
+}catch(e){document.getElementById('emailStatus').textContent='Failed to send email, but code is '+codeSent; codeInput.classList.remove('hidden'); document.getElementById('authBtn').textContent='Verify Code & Login';}
+}
+function logout(){localStorage.removeItem('mt_cur');location.reload();}
 function taskHtml(t){
 let app=APPS.find(a=>a.id===t.app);
-return `<div class="task"><div class="logo">${app?app.icon:'🔗'}</div><div style="flex:1"><b>${t.name}</b><br><small>${t.app} • ${t.type} • Earn ₦${t.priceEarn}</small><br><span class="badge">${t.remaining} left</span></div><button class="btn" style="width:auto" onclick="openTask('${t.id}')">View</button></div>`;
+let logoHtml = app && app.logo? `<img src="${app.logo}" alt="${t.app}">` : (app?app.icon:'🔗');
+return `<div class="task"><div class="logo">${logoHtml}</div><div style="flex:1"><b>${t.name}</b><br><small>${t.app} • ${t.type} • Earn ₦${t.priceEarn}</small><br><span class="badge">${t.remaining} left</span></div><button class="btn" style="width:auto" onclick="openTask('${t.id}')">View</button></div>`;
 }
-function renderTasks(){
-let all=JSON.parse(localStorage.getItem('mt_tasks')||'[]').filter(t=>t.remaining>0);
-let start=(page-1)*10;
-let slice=all.slice(start,start+10);
-document.getElementById('allTasks').innerHTML=slice.map(t=>taskHtml(t)).join('')||'No tasks';
-document.getElementById('prevBtn').style.display=page>1?'block':'none';
-document.getElementById('nextBtn').style.display=(start+10)<all.length?'block':'none';
+function getMyDoneTaskIds(){
+let proofs=JSON.parse(localStorage.getItem('mt_proofs')||'[]');
+return proofs.filter(p=>p.user===curUser.email).map(p=>p.taskId);
 }
-function changePage(d){ page+=d; renderTasks(); }
-function submitDeposit(){
-let name=document.getElementById('dName').value, amt=parseInt(document.getElementById('dAmt').value);
-if(!name||!amt) return alert('Fill');
-let deps=JSON.parse(localStorage.getItem('mt_deps')||'[]');
-deps.push({id:Date.now(),email:currentUser.email,name,amt,status:'pending'});
-localStorage.setItem('mt_deps',JSON.stringify(deps));
-alert('Your deposit has successfully been made and will be reviewed and approved within 24 hours');
-renderMyDeposits();
+function loadHomeTasks(){
+let doneIds=getMyDoneTaskIds();
+let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]').filter(t=>t.remaining>0 && t.owner!==curUser.email &&!doneIds.includes(t.id)).slice(0,5);
+document.getElementById('homeTasks').innerHTML=tasks.length?tasks.map(taskHtml).join(''):'No tasks';
 }
-function renderMyDeposits(){
-let deps=JSON.parse(localStorage.getItem('mt_deps')||'[]').filter(d=>d.email===currentUser.email);
-document.getElementById('myDeposits').innerHTML=deps.map(d=>`<div style="padding:8px;border-bottom:1px solid #eee">₦${d.amt} - ${d.status}</div>`).join('');
+function loadAllTasks(){
+let doneIds=getMyDoneTaskIds();
+let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]').filter(t=>t.remaining>0 && t.owner!==curUser.email &&!doneIds.includes(t.id));
+let start=(currentPage-1)*perPage; let pag=tasks.slice(start,start+perPage);
+document.getElementById('allTasks').innerHTML=pag.length?pag.map(taskHtml).join(''):'No tasks - you don finish all!';
+document.getElementById('prevBtn').disabled=currentPage===1;
+document.getElementById('nextBtn').disabled=start+perPage>=tasks.length;
 }
+function changePage(d){currentPage+=d; if(currentPage<1) currentPage=1; loadAllTasks();}
 function createTask(){
-let app=document.getElementById('pApp').value, type=document.getElementById('pType').value, link=document.getElementById('pLink').value, qty=parseInt(document.getElementById('pQty').value), inst=document.getElementById('pInst').value, custom=document.getElementById('pCustom').value;
-if(!link||!qty) return alert('Fill link and qty');
+let type=document.getElementById('pType').value;
+let link=document.getElementById('pLink').value.trim();
+let qty=parseInt(document.getElementById('pQty').value);
+if(!link||!qty){alert('Fill link and qty');return;}
 let price=PRICES[type]; let total=price.adv*qty;
-if(currentUser.dep<total) return alert('Insufficient deposit. Need ₦'+total+' have ₦'+currentUser.dep);
-currentUser.dep-=total;
-updateUser(currentUser);
+if((curUser.dep||0)<total){alert('Insufficient deposit. Need ₦'+total); showPage('deposit'); return;}
 let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]');
-tasks.unshift({id:'t'+Date.now(),advertiser:currentUser.email,name:app+' '+type,app,type,link,inst,custom,priceAdv:price.adv,priceEarn:price.earn,quantity:qty,remaining:qty});
+let customComments=[];
+if(type==='Custom Comment'){ let c=prompt('Enter custom comments separated by comma'); if(c) customComments=c.split(',').map(s=>s.trim()).filter(Boolean); }
+let task={id:'t_'+Date.now(),name:type+' on '+selectedApp,app:selectedApp,type,link,qty,remaining:qty,priceAdv:price.adv,priceEarn:price.earn,owner:curUser.email,customComments,created:Date.now()};
+tasks.push(task);
 localStorage.setItem('mt_tasks',JSON.stringify(tasks));
-alert('Task posted and auto-approved!');
-showPage('tasks'); renderTasks();
+curUser.dep-=total;
+let users=JSON.parse(localStorage.getItem('mt_users')||'[]'); let idx=users.findIndex(u=>u.email===curUser.email); users[idx]=curUser; localStorage.setItem('mt_users',JSON.stringify(users));
+alert('Task posted!'); document.getElementById('pLink').value=''; loadAllTasks(); showPage('tasks');
 }
 function openTask(id){
 let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]'); curTask=tasks.find(t=>t.id===id);
+if(!curTask){alert('Task not found');return;}
 document.getElementById('popTitle').textContent=curTask.name;
-document.getElementById('popInfo').textContent=curTask.inst+' | Earn ₦'+curTask.priceEarn;
 document.getElementById('popLink').href=curTask.link;
-if(curTask.type==='Custom Comment' && curTask.custom){
-document.getElementById('popCustomList').innerHTML='Copy:<br>'+curTask.custom.split('\n').map(c=>`<span style="display:inline-block;background:#fff;padding:4px 8px;margin:3px;border-radius:6px;cursor:pointer" onclick="navigator.clipboard.writeText('${c.replace(/'/g,"\\'")}');alert('Copied')">${c}</span>`).join('');
-}else{ document.getElementById('popCustomList').innerHTML=''; }
+let info=document.getElementById('popInfo'); info.classList.add('hidden'); info.textContent='';
+if(curTask.app==='Website') info.textContent='Note: If signup, use same email as this app.';
+if(curTask.type==='Group Join') info.textContent='Join the group via link, take screenshot as proof.';
+if(info.textContent) info.classList.remove('hidden');
+let customDiv=document.getElementById('popCustomList');
+if(curTask.customComments && curTask.customComments.length){
+customDiv.innerHTML='<b>Use one of these comments:</b><br>'+curTask.customComments.join('<br>');
+}else customDiv.innerHTML='';
 document.getElementById('taskPopup').style.display='flex';
 }
-function closePopup(id){ document.getElementById(id).style.display='none'; }
+function closePopup(id){document.getElementById(id).style.display='none';}
 function submitProof(){
-let handle=document.getElementById('popHandle').value; let file=document.getElementById('popFile').files[0];
-if(!handle||!file) return alert('Enter handle and proof');
+let handle=document.getElementById('popHandle').value.trim();
+let file=document.getElementById('popFile').files[0];
+if(!handle||!file){alert('Fill handle and upload proof');return;}
+let proofs=JSON.parse(localStorage.getItem('mt_proofs')||'[]');
+if(proofs.find(p=>p.taskId===curTask.id && p.user===curUser.email)){alert('Already submitted');return;}
 let reader=new FileReader();
 reader.onload=function(e){
 let proofs=JSON.parse(localStorage.getItem('mt_proofs')||'[]');
-proofs.push({id:'p'+Date.now(),taskId:curTask.id,earner:currentUser.email,handle,img:e.target.result,status:'pending',earn:curTask.priceEarn});
+proofs.push({id:'p_'+Date.now(),taskId:curTask.id,taskName:curTask.name,owner:curTask.owner,user:curUser.email,handle,proof:e.target.result,status:'pending',type:curTask.type,app:curTask.app,created:Date.now()});
 localStorage.setItem('mt_proofs',JSON.stringify(proofs));
-closePopup('taskPopup');
-alert('Task successfully submitted, will be reviewed and approved within 24 - 48 hours');
+alert('Proof submitted! Task removed from your feed.'); closePopup('taskPopup');
+loadHomeTasks(); loadAllTasks();
 };
 reader.readAsDataURL(file);
 }
-function updateUser(u){
-let users=JSON.parse(localStorage.getItem('mt_users')||'[]');
-let i=users.findIndex(x=>x.email===u.email); users[i]=u;
-localStorage.setItem('mt_users',JSON.stringify(users)); currentUser=u;
+function submitDeposit(){
+let name=document.getElementById('dName').value.trim();
+let amt=parseInt(document.getElementById('dAmt').value);
+if(!name||!amt){alert('Fill name and amount');return;}
+let deps=JSON.parse(localStorage.getItem('mt_deposits')||'[]');
+deps.push({id:'d_'+Date.now(),user:curUser.email,accountName:name,amount:amt,status:'pending',created:Date.now()});
+localStorage.setItem('mt_deposits',JSON.stringify(deps));
+alert('Deposit request sent'); loadMyDeposits();
 }
-function showAdmin(type){
-let div=document.getElementById('adminContent');
-if(type==='users'){
-let users=JSON.parse(localStorage.getItem('mt_users')||'[]');
-div.innerHTML='<h4>All Users</h4>'+users.map(u=>`<div style="padding:8px;border-bottom:1px solid #eee"><b>${u.username}</b> (${u.email})<br>Av:₦${u.av} Pd:₦${u.pd} Dep:₦${u.dep} Status:${u.status}<br><button onclick="tempDel('${u.email}')">Temp 7d</button> <button onclick="permDel('${u.email}')">Ban</button> <button onclick="enableUser('${u.email}')">Enable</button></div>`).join('');
+function loadMyDeposits(){
+let deps=JSON.parse(localStorage.getItem('mt_deposits')||'[]').filter(d=>d.user===curUser.email);
+document.getElementById('myDeposits').innerHTML=deps.length?deps.map(d=>`<div style="border:1px solid #eee;padding:8px;margin:5px 0;border-radius:6px">${d.accountName} - ₦${d.amount} - <b>${d.status}</b></div>`).join(''):'No deposits yet';
 }
-if(type==='allTasksAdmin'){
+function showAdmin(tab){
+if(curUser.email!==ADMIN){alert('Not admin');return;}
+let content=document.getElementById('adminContent');
+if(tab==='users'){
+let users=JSON.parse(localStorage.getItem('mt_users')||'[]');
+content.innerHTML='<h4>All Users</h4>'+users.map(u=>`<div style="border-bottom:1px solid #eee;padding:8px">${u.username} - ${u.email} - Av ₦${u.av} Pd ₦${u.pd} Dep ₦${u.dep}</div>`).join('');
+}
+if(tab==='allTasksAdmin'){
 let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]');
-div.innerHTML='<h4>All Tasks</h4>'+tasks.map(t=>`<div style="padding:8px;border-bottom:1px solid #eee">${t.name}<br><button onclick="delTask('${t.id}')">Delete</button></div>`).join('');
+content.innerHTML='<h4>All Tasks</h4>'+tasks.map(t=>`<div style="border-bottom:1px solid #eee;padding:8px">${t.name} - ${t.remaining}/${t.qty} - Owner ${t.owner} <button onclick="deleteTask('${t.id}')">Delete</button></div>`).join('');
 }
-if(type==='proofs'){
+if(tab==='proofs'){
 let proofs=JSON.parse(localStorage.getItem('mt_proofs')||'[]').filter(p=>p.status==='pending');
-div.innerHTML='<h4>Pending Proofs</h4>'+proofs.map(p=>`<div style="padding:8px;border-bottom:1px solid #eee"><img src="${p.img}" style="width:100%;max-height:200px;object-fit:contain"><br>Task:${p.taskId}<br>Earner:${p.earner}<br>Handle:${p.handle}<br>₦${p.earn}<br><button onclick="approveProof('${p.id}')">Approve</button> <button onclick="rejectProof('${p.id}')">Reject</button></div>`).join('')||'No pending';
+content.innerHTML='<h4>Pending Proofs</h4>'+(proofs.length?proofs.map(p=>`<div style="border:1px solid #eee;padding:10px;margin:8px 0"><b>${p.taskName}</b><br>By ${p.user} - Handle ${p.handle}<br><img src="${p.proof}" style="width:100%;max-width:200px"><br><button class="btn-approve" onclick="approveProof('${p.id}')">Approve</button><button class="btn-reject" onclick="rejectProof('${p.id}')">Reject</button></div>`).join(''):'No pending');
 }
-if(type==='depositsAdmin'){
-let deps=JSON.parse(localStorage.getItem('mt_deps')||'[]').filter(d=>d.status==='pending');
-div.innerHTML='<h4>Pending Deposits</h4>'+deps.map(d=>`<div style="padding:8px;border-bottom:1px solid #eee">${d.email} - ₦${d.amt} - ${d.name}<br><button onclick="approveDep('${d.id}')">Approve</button> <button onclick="rejectDep('${d.id}')">Reject</button></div>`).join('')||'No pending';
+if(tab==='depositsAdmin'){
+let deps=JSON.parse(localStorage.getItem('mt_deposits')||'[]').filter(d=>d.status==='pending');
+content.innerHTML='<h4>Pending Deposits</h4>'+(deps.length?deps.map(d=>`<div style="border:1px solid #eee;padding:10px;margin:8px 0">${d.user} sent ₦${d.amount} as ${d.accountName}<br><button class="btn-approve" onclick="approveDeposit('${d.id}')">Approve</button><button class="btn-reject" onclick="rejectDeposit('${d.id}')">Reject</button></div>`).join(''):'No pending');
 }
 }
-function tempDel(email){ let users=JSON.parse(localStorage.getItem('mt_users')||'[]'); let u=users.find(x=>x.email===email); u.status='temp'; u.until=new Date(Date.now()+7*24*3600*1000).toISOString(); localStorage.setItem('mt_users',JSON.stringify(users)); showAdmin('users'); }
-function permDel(email){ let users=JSON.parse(localStorage.getItem('mt_users')||'[]'); let u=users.find(x=>x.email===email); u.status='banned'; localStorage.setItem('mt_users',JSON.stringify(users)); showAdmin('users'); }
-function enableUser(email){ let users=JSON.parse(localStorage.getItem('mt_users')||'[]'); let u=users.find(x=>x.email===email); u.status='active'; delete u.until; localStorage.setItem('mt_users',JSON.stringify(users)); showAdmin('users'); }
-function delTask(id){ let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]'); localStorage.setItem('mt_tasks',JSON.stringify(tasks.filter(t=>t.id!==id))); showAdmin('allTasksAdmin'); }
 function approveProof(id){
-let proofs=JSON.parse(localStorage.getItem('mt_proofs')||'[]'); let p=proofs.find(x=>x.id===id); p.status='approved_pending';
-localStorage.setItem('mt_proofs',JSON.stringify(proofs));
-let users=JSON.parse(localStorage.getItem('mt_users')||'[]'); let u=users.find(x=>x.email===p.earner); u.pd+=p.earn; localStorage.setItem('mt_users',JSON.stringify(users));
-let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]'); let t=tasks.find(x=>x.id===p.taskId); if(t) t.remaining--; localStorage.setItem('mt_tasks',JSON.stringify(tasks));
-setTimeout(()=>{ let users2=JSON.parse(localStorage.getItem('mt_users')||'[]'); let u2=users2.find(x=>x.email===p.earner); u2.pd-=p.earn; u2.av+=p.earn; localStorage.setItem('mt_users',JSON.stringify(users2)); },1000);
-showAdmin('proofs');
+let proofs=JSON.parse(localStorage.getItem('mt_proofs')||'[]'); let p=proofs.find(x=>x.id===id); if(!p) return;
+let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]'); let t=tasks.find(x=>x.id===p.taskId);
+if(t){ t.remaining--; localStorage.setItem('mt_tasks',JSON.stringify(tasks)); }
+let users=JSON.parse(localStorage.getItem('mt_users')||'[]'); let u=users.find(x=>x.email===p.user); if(u){ let earn=t?t.priceEarn:20; u.av=(u.av||0)+earn; localStorage.setItem('mt_users',JSON.stringify(users)); }
+p.status='approved'; localStorage.setItem('mt_proofs',JSON.stringify(proofs)); alert('Approved'); showAdmin('proofs');
 }
-function rejectProof(id){ let proofs=JSON.parse(localStorage.getItem('mt_proofs')||'[]'); let p=proofs.find(x=>x.id===id); p.status='rejected'; localStorage.setItem('mt_proofs',JSON.stringify(proofs)); showAdmin('proofs'); }
-function approveDep(id){
-let deps=JSON.parse(localStorage.getItem('mt_deps')||'[]'); let d=deps.find(x=>x.id===id); d.status='approved';
-localStorage.setItem('mt_deps',JSON.stringify(deps));
-let users=JSON.parse(localStorage.getItem('mt_users')||'[]'); let u=users.find(x=>x.email===d.email); u.dep+=d.amt; localStorage.setItem('mt_users',JSON.stringify(users));
-showAdmin('depositsAdmin');
+function rejectProof(id){
+let proofs=JSON.parse(localStorage.getItem('mt_proofs')||'[]'); let p=proofs.find(x=>x.id===id); if(!p) return;
+p.status='rejected'; localStorage.setItem('mt_proofs',JSON.stringify(proofs)); alert('Rejected'); showAdmin('proofs');
 }
-function rejectDep(id){ let deps=JSON.parse(localStorage.getItem('mt_deps')||'[]'); let d=deps.find(x=>x.id===id); d.status='rejected'; localStorage.setItem('mt_deps',JSON.stringify(deps)); showAdmin('depositsAdmin'); }
-function logout(){ localStorage.removeItem('mt_cur'); location.reload(); }
-init();
+function approveDeposit(id){
+let deps=JSON.parse(localStorage.getItem('mt_deposits')||'[]'); let d=deps.find(x=>x.id===id); if(!d) return;
+let users=JSON.parse(localStorage.getItem('mt_users')||'[]'); let u=users.find(x=>x.email===d.user); if(u){ u.dep=(u.dep||0)+d.amount; localStorage.setItem('mt_users',JSON.stringify(users)); }
+d.status='approved'; localStorage.setItem('mt_deposits',JSON.stringify(deps)); alert('Deposit approved'); showAdmin('depositsAdmin');
+}
+function rejectDeposit(id){
+let deps=JSON.parse(localStorage.getItem('mt_deposits')||'[]'); let d=deps.find(x=>x.id===id); if(!d) return;
+d.status='rejected'; localStorage.setItem('mt_deposits',JSON.stringify(deps)); alert('Rejected'); showAdmin('depositsAdmin');
+}
+function deleteTask(id){ if(!confirm('Delete task?')) return; let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]'); tasks=tasks.filter(t=>t.id!==id); localStorage.setItem('mt_tasks',JSON.stringify(tasks)); showAdmin('allTasksAdmin');}
+window.onload=init;
