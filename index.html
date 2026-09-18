@@ -5,16 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>social-task1 - Earn by Tasks</title>
 <link rel="icon" href="logo.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a7e07">
+<link rel="apple-touch-icon" href="logo.png">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Arial,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:#f2f4f7;color:#222}
 .top{background:#0a7e07;color:#fff;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:20}
 .top-left{display:flex;align-items:center;gap:10px}
-.app-logo-img{width:38px;height:38px;border-radius:50%;border:2px solid #fff;object-fit:cover;background:#000}
+.app-logo-img{width:40px;height:40px;border-radius:50%;border:2px solid #fff;object-fit:cover;background:#000}
 .menu-btn{width:32px;height:24px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer}
 .menu-btn span{display:block;height:3px;background:#fff;border-radius:5px;width:100%}
-.join-bar{background:#25D366;color:#fff;text-align:center;padding:9px;font-size:14px;position:sticky;top:54px;z-index:15}
+.join-bar{background:#25D366;color:#fff;text-align:center;padding:10px;font-size:14px;position:sticky;top:54px;z-index:15}
 .join-bar a{background:#fff;color:#25D366;padding:5px 12px;border-radius:20px;text-decoration:none;font-weight:bold;margin-left:8px}
 #sideMenu{position:fixed;top:0;left:-270px;width:260px;height:100%;background:#fff;box-shadow:2px 0 15px rgba(0,0,0,.2);z-index:30;transition:.3s;padding:20px}
 #sideMenu.active{left:0}
@@ -38,20 +41,20 @@ body{background:#f2f4f7;color:#222}
 </head>
 <body>
 <div class="top"><div class="top-left"><img src="logo.png" class="app-logo-img"><div><b>social-task1</b><br><small style="font-size:10px">COMPLETE • EARN • WITHDRAW</small></div></div><div class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span></div></div>
-<div class="join-bar">📢 Official Group <a href="https://chat.whatsapp.com/LYlXUpdqiL24XQ42rtZCl1" target="_blank">Join WhatsApp</a></div>
+<div class="join-bar">📢 Official Group <a href="https://chat.whatsapp.com/LYlXUpdqiL24XQ42rtZCl1?s=cl&p=a&mlu=4&ilr=4" target="_blank">Join WhatsApp</a></div>
 <div id="sideMenu">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:15px"><img src="logo.png" style="width:42px;height:42px;border-radius:50%"><b>social-task1</b></div>
 <a href="#" onclick="showPage('home');toggleMenu()">🏠 Dashboard</a>
 <a href="#" onclick="showPage('tasks');toggleMenu()">📋 All Tasks</a>
 <a href="#" onclick="showPage('post');toggleMenu()">➕ Post Task</a>
-<a href="#" onclick="showPage('deposit');toggleMenu()">💰 Deposit</a>
-<a href="https://chat.whatsapp.com/LYlXUpdqiL24XQ42rtZCl1" target="_blank" style="color:#25D366">💬 Join Group</a>
-<a href="#" id="adminLink" class="hidden" onclick="showPage('admin');toggleMenu()">👑 Admin - ONLY YOU</a>
+<a href="#" onclick="showPage('deposit');toggleMenu()">💰 Deposit - Balance ₦0</a>
+<a href="https://chat.whatsapp.com/LYlXUpdqiL24XQ42rtZCl1?s=cl&p=a&mlu=4&ilr=4" target="_blank" style="color:#25D366">💬 Join WhatsApp Group</a>
+<a href="#" id="adminLink" class="hidden" style="display:none" onclick="showPage('admin');toggleMenu()">👑 Admin Panel</a>
 <a href="#" onclick="logout()">🚪 Logout</a>
 </div>
 <div id="auth" class="card" style="margin-top:20px;text-align:center">
-<img src="logo.png" style="width:85px;height:85px;border-radius:50%;margin:auto;display:block;border:3px solid #0a7e07">
-<h2>social-task1</h2><small>Earn by completing social tasks</small>
+<img src="logo.png" style="width:90px;height:90px;border-radius:50%;margin:auto;display:block;border:3px solid #0a7e07">
+<h2>social-task1</h2><small>Complete Tasks • Earn Rewards</small>
 <div style="text-align:left;margin-top:15px">
 <input id="aUser" class="input" placeholder="Username">
 <input id="aEmail" class="input" placeholder="Email">
@@ -66,18 +69,18 @@ body{background:#f2f4f7;color:#222}
 <div class="card"><h3>🔥 Hot Tasks <span style="float:right;font-size:12px;color:#0a7e07" onclick="showPage('tasks')">View All →</span></h3><div id="homeTasks"></div></div>
   </div>
   <div id="tasks" class="hidden">
-<div class="card"><h3>All Available Tasks</h3><div id="allTasks"></div>
+<div class="card"><h3>All Available Tasks - Auto Delete After Done</h3><div id="allTasks"></div>
 <div style="display:flex;gap:10px;margin-top:12px"><button class="btn btn2" id="prevBtn" onclick="changePage(-1)">Prev</button><button class="btn" id="nextBtn" onclick="changePage(1)">Next</button></div>
 </div></div>
 
 <div id="post" class="hidden">
 <div class="card">
-<h3>Post New Task (FamsUp Style)</h3>
+<h3>Post New Task</h3>
 <div style="background:#fff8e1;padding:12px;border-radius:10px;margin-bottom:12px;border:1px solid #ffe082">
-<b>Deposit: <span id="postDep">₦0</span></b><br><small>Moniepoint 5895097608 - Ugochi Patricia</small><br>
-<button class="btn" onclick="showPage('deposit')" style="margin-top:8px">Fund Wallet</button>
+<b>Your Deposit Balance: <span id="postDep">₦0</span> (Starts at 0)</b><br><small>Bank: Moniepoint 5895097608 - Ugochi Patricia</small><br>
+<button class="btn" onclick="showPage('deposit')" style="margin-top:8px">Fund Wallet - Deposit ₦0</button>
 </div>
-<label><b>1. Select Platform - Click Logo</b></label>
+<label><b>1. Select Platform - Click Real Logo</b></label>
 <div id="appGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0"></div>
 <p id="selectedAppText" style="color:#0a7e07;font-weight:bold;margin-bottom:8px"></p>
 <label>Task Type</label><select id="pType" class="input"></select>
@@ -89,13 +92,14 @@ body{background:#f2f4f7;color:#222}
 </div>
 
 <div id="deposit" class="hidden">
-<div class="card"><h3>Deposit Funds</h3><p>Bank: Moniepoint<br>Acc: <b>5895097608</b><br>Name: <b>Ugochi Patricia Etumugo</b></p>
-<input id="dName" class="input" placeholder="Sender name"><input id="dAmt" type="number" class="input" placeholder="Amount"><button class="btn" onclick="submitDeposit()">I Have Paid</button></div>
+<div class="card"><h3>Deposit Funds - Balance ₦0</h3><p>Bank: Moniepoint<br>Acc: <b>5895097608</b><br>Name: <b>Ugochi Patricia Etumugo</b></p>
+<p style="background:#e8f5e9;padding:8px;border-radius:8px">Current Balance: <b>₦0</b> - Deposit to post tasks</p>
+<input id="dName" class="input" placeholder="Sender account name"><input id="dAmt" type="number" class="input" placeholder="Amount you sent"><button class="btn" onclick="submitDeposit()">I Have Paid</button></div>
 <div class="card"><h4>My Deposits</h4><div id="myDeposits"></div></div>
 </div>
 
 <div id="admin" class="hidden">
-<div class="card" style="border:2px solid #0a7e07"><h3>👑 Admin Panel - markobinna120@gmail.com ONLY</h3><small>Only you can access this</small><br><br>
+<div class="card" style="border:2px solid #0a7e07"><h3>👑 Admin Panel - ONLY markobinna120@gmail.com</h3><small>Hidden from other users menu</small><br><br>
 <button class="btn" onclick="showAdmin('users')">Users</button>
 <button class="btn btn2" onclick="showAdmin('allTasksAdmin')">All Tasks</button>
 <button class="btn btn2" onclick="showAdmin('proofs')">Proofs</button>
@@ -109,8 +113,8 @@ body{background:#f2f4f7;color:#222}
 <label>Your Handle</label><input id="popHandle" class="input" placeholder="@handle">
 <label>Proof Screenshot</label><input id="popFile" type="file" accept="image/*" class="input">
 <div id="popCustomList" style="background:#f5f5f5;padding:8px;border-radius:8px;margin:8px 0;font-size:13px"></div>
-<button class="btn" onclick="submitProof()">Submit & Remove From Feed</button><button class="btn btn2" onclick="closePopup('taskPopup')">Close</button>
+<button class="btn" onclick="submitProof()">Submit & Delete From Feed</button><button class="btn btn2" onclick="closePopup('taskPopup')">Close</button>
 </div></div>
 <script src="app.js"></script>
 </body>
-</html>
+                                                             </html>
