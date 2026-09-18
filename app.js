@@ -26,7 +26,7 @@ grid.innerHTML='';
 APPS.forEach(a=>{
 let d=document.createElement('div');
 d.style.cssText='background:#fff;border:2px solid #eee;border-radius:14px;padding:12px;text-align:center;cursor:pointer';
-d.innerHTML=`<img src="${a.logo}" style="width:45px;height:45px;border-radius:50%;object-fit:cover"><br><small style="font-weight:bold;font-size:11px">${a.id}</small>`;
+d.innerHTML=`<img src="${a.logo}" style="width:45px;height:45px;border-radius:50%;object-fit:cover;background:#fff"><br><small style="font-weight:bold;font-size:11px">${a.id}</small>`;
 d.onclick=()=>selectApp(a.id);
 d.id='app_'+a.id;
 grid.appendChild(d);
@@ -44,15 +44,23 @@ sel.onchange=updatePrice;document.getElementById('pQty').oninput=updatePrice;upd
 }
 function updatePrice(){
 let t=document.getElementById('pType').value;let q=parseInt(document.getElementById('pQty').value)||0;if(!PRICES[t])return;
-document.getElementById('priceInfo').innerHTML=`Pay ₦${PRICES[t].adv*q} • Earn per user ₦${PRICES[t].earn} • Need deposit ₦${PRICES[t].adv*q}`;
- }
+document.getElementById('priceInfo').innerHTML=`Pay ₦${PRICES[t].adv*q} • Earn per user ₦${PRICES[t].earn} • Deposit starts ₦0 - Need ₦${PRICES[t].adv*q}`;
+            }
 function checkLogin(){
 let email=localStorage.getItem('mt_cur');if(!email){showAuth();return;}
 let users=JSON.parse(localStorage.getItem('mt_users')||'[]');curUser=users.find(u=>u.email===email);
 if(!curUser){showAuth();return;}
 document.getElementById('auth').classList.add('hidden');document.getElementById('home').classList.remove('hidden');
+// DEPOSIT IS 0 BY DEFAULT
+if(curUser.av===undefined) curUser.av=0; if(curUser.pd===undefined) curUser.pd=0; if(curUser.dep===undefined) curUser.dep=0;
 document.getElementById('avBal').textContent='₦'+(curUser.av||0);document.getElementById('pdBal').textContent='₦'+(curUser.pd||0);document.getElementById('postDep').textContent='₦'+(curUser.dep||0);
-if(curUser.email===ADMIN)document.getElementById('adminLink').classList.remove('hidden');else document.getElementById('adminLink').classList.add('hidden');
+// ADMIN PANEL ONLY FOR YOU - HIDE FROM OTHERS
+let adminLink=document.getElementById('adminLink');
+if(curUser.email===ADMIN){
+adminLink.classList.remove('hidden');adminLink.style.display='block';
+}else{
+adminLink.classList.add('hidden');adminLink.style.display='none';
+}
 loadHomeTasks();loadAllTasks();loadMyDeposits();
 }
 function showAuth(){document.getElementById('auth').classList.remove('hidden');document.getElementById('home').classList.add('hidden');}
@@ -65,18 +73,18 @@ if(!codeInput.classList.contains('hidden')){if(document.getElementById('aCode').
 if(!user||!email||!pass){alert('Fill all');return;}let users=JSON.parse(localStorage.getItem('mt_users')||'[]');let exists=users.find(u=>u.email===email);tempData={user,email,pass};
 if(exists){tempData.mode='login';if(exists.password!==pass){alert('Wrong password');return;}}else tempData.mode='signup';
 codeSent=Math.floor(100000+Math.random()*900000).toString();document.getElementById('emailStatus').textContent='Sending...';
-try{await emailjs.send(SERVICE_ID,TEMPLATE_ID,{to_email:email,code:codeSent,username:user});document.getElementById('emailStatus').textContent='Code sent to '+email;codeInput.classList.remove('hidden');document.getElementById('authBtn').textContent='Verify & Login';}catch(e){document.getElementById('emailStatus').textContent='Code: '+codeSent+' (email failed)';codeInput.classList.remove('hidden');document.getElementById('authBtn').textContent='Verify & Login';}
+try{await emailjs.send(SERVICE_ID,TEMPLATE_ID,{to_email:email,code:codeSent,username:user});document.getElementById('emailStatus').textContent='Code sent to '+email;codeInput.classList.remove('hidden');document.getElementById('authBtn').textContent='Verify & Login';}catch(e){document.getElementById('emailStatus').textContent='Code: '+codeSent+' (email failed, use this)';codeInput.classList.remove('hidden');document.getElementById('authBtn').textContent='Verify & Login';}
 }
 function logout(){localStorage.removeItem('mt_cur');location.reload();}
 function taskHtml(t){let app=APPS.find(a=>a.id===t.app);let img=app?`<img src="${app.logo}">`:'';return `<div class="task"><div class="logo">${img}</div><div style="flex:1"><b>${t.name}</b><br><small>${t.app} • ${t.type} • ₦${t.priceEarn}</small><br><span class="badge">${t.remaining} left</span></div><button class="btn" style="width:auto;padding:8px 16px" onclick="openTask('${t.id}')">Do Task</button></div>`;}
 function getMyDoneIds(){let p=JSON.parse(localStorage.getItem('mt_proofs')||'[]');return p.filter(x=>x.user===curUser.email).map(x=>x.taskId);}
-function loadHomeTasks(){let done=getMyDoneIds();let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]').filter(t=>t.remaining>0&&t.owner!==curUser.email&&!done.includes(t.id)).slice(0,6);document.getElementById('homeTasks').innerHTML=tasks.length?tasks.map(taskHtml).join(''):'No tasks - check All Tasks';}
-function loadAllTasks(){let done=getMyDoneIds();let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]').filter(t=>t.remaining>0&&t.owner!==curUser.email&&!done.includes(t.id));let start=(currentPage-1)*perPage;let pag=tasks.slice(start,start+perPage);document.getElementById('allTasks').innerHTML=pag.length?pag.map(taskHtml).join(''):'You have completed all tasks! 🎉';document.getElementById('prevBtn').disabled=currentPage===1;document.getElementById('nextBtn').disabled=start+perPage>=tasks.length;}
+function loadHomeTasks(){let done=getMyDoneIds();let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]').filter(t=>t.remaining>0&&t.owner!==curUser.email&&!done.includes(t.id)).slice(0,6);document.getElementById('homeTasks').innerHTML=tasks.length?tasks.map(taskHtml).join(''):'No tasks - you completed all!';}
+function loadAllTasks(){let done=getMyDoneIds();let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]').filter(t=>t.remaining>0&&t.owner!==curUser.email&&!done.includes(t.id));let start=(currentPage-1)*perPage;let pag=tasks.slice(start,start+perPage);document.getElementById('allTasks').innerHTML=pag.length?pag.map(taskHtml).join(''):'You have completed all tasks! 🎉 - Deleted from your feed';document.getElementById('prevBtn').disabled=currentPage===1;document.getElementById('nextBtn').disabled=start+perPage>=tasks.length;}
 function changePage(d){currentPage+=d;if(currentPage<1)currentPage=1;loadAllTasks();}
 function createTask(){
 let type=document.getElementById('pType').value;let link=document.getElementById('pLink').value.trim();let qty=parseInt(document.getElementById('pQty').value);
 if(!link||!qty){alert('Fill all');return;}let price=PRICES[type];let total=price.adv*qty;
-if((curUser.dep||0)<total){alert('Insufficient deposit ₦'+total);showPage('deposit');return;}
+if((curUser.dep||0)<total){alert('Insufficient deposit. Balance ₦0, Need ₦'+total+'. Go deposit!');showPage('deposit');return;}
 let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]');
 let custom=[];if(type==='Custom Comment'){let c=prompt('Enter comments separated by comma');if(c)custom=c.split(',').map(s=>s.trim()).filter(Boolean);}
 let task={id:'t_'+Date.now(),name:type+' on '+selectedApp,app:selectedApp,type,link,qty,remaining:qty,priceAdv:price.adv,priceEarn:price.earn,owner:curUser.email,customComments:custom,created:Date.now()};
@@ -87,7 +95,7 @@ alert('Task posted!');document.getElementById('pLink').value='';showPage('tasks'
 function openTask(id){
 let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]');curTask=tasks.find(t=>t.id===id);if(!curTask){alert('Not found');return;}
 document.getElementById('popTitle').textContent=curTask.name;document.getElementById('popLink').href=curTask.link;
-let info=document.getElementById('popInfo');info.classList.add('hidden');info.textContent='';if(curTask.app==='Website')info.textContent='Use same email as this app for signup';if(curTask.type==='Group Join')info.textContent='Join group and screenshot';if(info.textContent)info.classList.remove('hidden');
+let info=document.getElementById('popInfo');info.classList.add('hidden');info.textContent='';if(curTask.app==='Website')info.textContent='Use same email as this app for signup';if(curTask.type==='Group Join')info.textContent='Join group and screenshot as proof';if(info.textContent)info.classList.remove('hidden');
 document.getElementById('popCustomList').innerHTML=curTask.customComments&&curTask.customComments.length?'<b>Use:</b><br>'+curTask.customComments.join('<br>'):'';
 document.getElementById('taskPopup').style.display='flex';
 }
@@ -95,27 +103,29 @@ function closePopup(id){document.getElementById(id).style.display='none';}
 function submitProof(){
 let handle=document.getElementById('popHandle').value.trim();let file=document.getElementById('popFile').files[0];
 if(!handle||!file){alert('Fill handle and proof');return;}
-let proofs=JSON.parse(localStorage.getItem('mt_proofs')||'[]');if(proofs.find(p=>p.taskId===curTask.id&&p.user===curUser.email)){alert('Already done');return;}
+let proofs=JSON.parse(localStorage.getItem('mt_proofs')||'[]');if(proofs.find(p=>p.taskId===curTask.id&&p.user===curUser.email)){alert('Already done - deleted from feed');return;}
 let reader=new FileReader();reader.onload=function(e){
 let proofs=JSON.parse(localStorage.getItem('mt_proofs')||'[]');
 proofs.push({id:'p_'+Date.now(),taskId:curTask.id,taskName:curTask.name,owner:curTask.owner,user:curUser.email,handle,proof:e.target.result,status:'pending',type:curTask.type,app:curTask.app,created:Date.now()});
 localStorage.setItem('mt_proofs',JSON.stringify(proofs));
-alert('Submitted! Task removed from your feed ✅');closePopup('taskPopup');loadHomeTasks();loadAllTasks();
+alert('Submitted! Task deleted from your feed ✅');closePopup('taskPopup');loadHomeTasks();loadAllTasks();
 };reader.readAsDataURL(file);
 }
-function submitDeposit(){let name=document.getElementById('dName').value.trim();let amt=parseInt(document.getElementById('dAmt').value);if(!name||!amt){alert('Fill');return;}let deps=JSON.parse(localStorage.getItem('mt_deposits')||'[]');deps.push({id:'d_'+Date.now(),user:curUser.email,accountName:name,amount:amt,status:'pending',created:Date.now()});localStorage.setItem('mt_deposits',JSON.stringify(deps));alert('Sent to admin');loadMyDeposits();}
-function loadMyDeposits(){let deps=JSON.parse(localStorage.getItem('mt_deposits')||'[]').filter(d=>d.user===curUser.email);document.getElementById('myDeposits').innerHTML=deps.length?deps.map(d=>`<div style="border:1px solid #eee;padding:8px;margin:5px 0;border-radius:8px">${d.accountName} - ₦${d.amount} - <b>${d.status}</b></div>`).join(''):'No deposits';}
+function submitDeposit(){let name=document.getElementById('dName').value.trim();let amt=parseInt(document.getElementById('dAmt').value);if(!name||!amt){alert('Fill');return;}let deps=JSON.parse(localStorage.getItem('mt_deposits')||'[]');deps.push({id:'d_'+Date.now(),user:curUser.email,accountName:name,amount:amt,status:'pending',created:Date.now()});localStorage.setItem('mt_deposits',JSON.stringify(deps));alert('Sent to admin - Only markobinna120@gmail.com will approve');loadMyDeposits();}
+function loadMyDeposits(){let deps=JSON.parse(localStorage.getItem('mt_deposits')||'[]').filter(d=>d.user===curUser.email);document.getElementById('myDeposits').innerHTML=deps.length?deps.map(d=>`<div style="border:1px solid #eee;padding:8px;margin:5px 0;border-radius:8px">${d.accountName} - ₦${d.amount} - <b>${d.status}</b></div>`).join(''):'No deposits - Balance ₦0';}
 function showAdmin(tab){
-if(curUser.email!==ADMIN){alert('You are not admin! Only markobinna120@gmail.com');return;}
+if(curUser.email!==ADMIN){alert('Access denied! Only markobinna120@gmail.com is admin');return;}
 let c=document.getElementById('adminContent');
-if(tab==='users'){let users=JSON.parse(localStorage.getItem('mt_users')||'[]');c.innerHTML='<h4>All Users</h4>'+users.map(u=>`<div style="padding:8px;border-bottom:1px solid #eee">${u.username} - ${u.email} - Av ₦${u.av} Dep ₦${u.dep}</div>`).join('');}
+if(tab==='users'){let users=JSON.parse(localStorage.getItem('mt_users')||'[]');c.innerHTML='<h4>All Users - Deposit ₦0 default</h4>'+users.map(u=>`<div style="padding:8px;border-bottom:1px solid #eee">${u.username} - ${u.email} - Av ₦${u.av||0} Dep ₦${u.dep||0}</div>`).join('');}
 if(tab==='allTasksAdmin'){let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]');c.innerHTML='<h4>Tasks</h4>'+tasks.map(t=>`<div style="padding:8px;border-bottom:1px solid #eee">${t.name} - ${t.remaining}/${t.qty} - ${t.owner} <button onclick="deleteTask('${t.id}')">Delete</button></div>`).join('');}
 if(tab==='proofs'){let proofs=JSON.parse(localStorage.getItem('mt_proofs')||'[]').filter(p=>p.status==='pending');c.innerHTML='<h4>Pending Proofs</h4>'+(proofs.length?proofs.map(p=>`<div style="border:1px solid #eee;padding:10px;margin:8px 0"><b>${p.taskName}</b><br>${p.user} - ${p.handle}<br><img src="${p.proof}" style="width:100%;max-width:220px"><br><button class="btn-approve" onclick="approveProof('${p.id}')">Approve</button><button class="btn-reject" onclick="rejectProof('${p.id}')">Reject</button></div>`).join(''):'No pending');}
-if(tab==='depositsAdmin'){let deps=JSON.parse(localStorage.getItem('mt_deposits')||'[]').filter(d=>d.status==='pending');c.innerHTML='<h4>Deposits</h4>'+(deps.length?deps.map(d=>`<div style="border:1px solid #eee;padding:10px;margin:8px 0">${d.user} - ₦${d.amount} - ${d.accountName}<br><button class="btn-approve" onclick="approveDeposit('${d.id}')">Approve</button><button class="btn-reject" onclick="rejectDeposit('${d.id}')">Reject</button></div>`).join(''):'No pending');}
+if(tab==='depositsAdmin'){let deps=JSON.parse(localStorage.getItem('mt_deposits')||'[]').filter(d=>d.status==='pending');c.innerHTML='<h4>Pending Deposits - All start ₦0</h4>'+(deps.length?deps.map(d=>`<div style="border:1px solid #eee;padding:10px;margin:8px 0">${d.user} - ₦${d.amount} - ${d.accountName}<br><button class="btn-approve" onclick="approveDeposit('${d.id}')">Approve</button><button class="btn-reject" onclick="rejectDeposit('${d.id}')">Reject</button></div>`).join(''):'No pending');}
 }
 function approveProof(id){let proofs=JSON.parse(localStorage.getItem('mt_proofs')||'[]');let p=proofs.find(x=>x.id===id);if(!p)return;let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]');let t=tasks.find(x=>x.id===p.taskId);if(t){t.remaining--;localStorage.setItem('mt_tasks',JSON.stringify(tasks));}let users=JSON.parse(localStorage.getItem('mt_users')||'[]');let u=users.find(x=>x.email===p.user);if(u){u.av=(u.av||0)+(t?t.priceEarn:20);localStorage.setItem('mt_users',JSON.stringify(users));}p.status='approved';localStorage.setItem('mt_proofs',JSON.stringify(proofs));alert('Approved');showAdmin('proofs');}
 function rejectProof(id){let proofs=JSON.parse(localStorage.getItem('mt_proofs')||'[]');let p=proofs.find(x=>x.id===id);if(!p)return;p.status='rejected';localStorage.setItem('mt_proofs',JSON.stringify(proofs));alert('Rejected');showAdmin('proofs');}
-function approveDeposit(id){let deps=JSON.parse(localStorage.getItem('mt_deposits')||'[]');let d=deps.find(x=>x.id===id);if(!d)return;let users=JSON.parse(localStorage.getItem('mt_users')||'[]');let u=users.find(x=>x.email===d.user);if(u){u.dep=(u.dep||0)+d.amount;localStorage.setItem('mt_users',JSON.stringify(users));}d.status='approved';localStorage.setItem('mt_deposits',JSON.stringify(deps));alert('Approved');showAdmin('depositsAdmin');}
+function approveDeposit(id){let deps=JSON.parse(localStorage.getItem('mt_deposits')||'[]');let d=deps.find(x=>x.id===id);if(!d)return;let users=JSON.parse(localStorage.getItem('mt_users')||'[]');let u=users.find(x=>x.email===d.user);if(u){u.dep=(u.dep||0)+d.amount;localStorage.setItem('mt_users',JSON.stringify(users));}d.status='approved';localStorage.setItem('mt_deposits',JSON.stringify(deps));alert('Deposit approved - from ₦0 to ₦'+d.amount);showAdmin('depositsAdmin');}
 function rejectDeposit(id){let deps=JSON.parse(localStorage.getItem('mt_deposits')||'[]');let d=deps.find(x=>x.id===id);if(!d)return;d.status='rejected';localStorage.setItem('mt_deposits',JSON.stringify(deps));alert('Rejected');showAdmin('depositsAdmin');}
 function deleteTask(id){if(!confirm('Delete?'))return;let tasks=JSON.parse(localStorage.getItem('mt_tasks')||'[]');tasks=tasks.filter(t=>t.id!==id);localStorage.setItem('mt_tasks',JSON.stringify(tasks));showAdmin('allTasksAdmin');}
 window.onload=init;
+// Web App Install
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
