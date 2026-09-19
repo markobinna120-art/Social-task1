@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>social-task1 - Earn by Tasks</title>
+<title>social-task1</title>
 <link rel="icon" href="logo.png">
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a7e07">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
@@ -14,7 +15,7 @@ body{background:#f2f4f7;color:#222}
 .top-left{display:flex;align-items:center;gap:10px}
 .app-logo-img{width:40px;height:40px;border-radius:50%;border:2px solid #fff;object-fit:cover;background:#000}
 .menu-btn{width:32px;height:24px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer}
-.menu-btn span{display:block;height:3px;background:#fff;border-radius:5px;width:100%}
+.menu-btn span{display:block;height:3px;background:#fff;border-radius:5px}
 .join-bar{background:#25D366;color:#fff;text-align:center;padding:10px;font-size:14px;position:sticky;top:54px;z-index:15}
 .join-bar a{background:#fff;color:#25D366;padding:5px 12px;border-radius:20px;text-decoration:none;font-weight:bold;margin-left:8px}
 #sideMenu{position:fixed;top:0;left:-270px;width:260px;height:100%;background:#fff;box-shadow:2px 0 15px rgba(0,0,0,.2);z-index:30;transition:.3s;padding:20px}
@@ -31,7 +32,7 @@ body{background:#f2f4f7;color:#222}
 .btn-reject{background:#e53935;color:#fff;padding:10px 14px;border:none;border-radius:8px;font-weight:bold;margin:4px;cursor:pointer}
 .input{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin:6px 0}
 .task{background:#fff;border-radius:12px;padding:12px;margin:8px 0;display:flex;align-items:center;gap:12px;border:1px solid #eee}
-.logo{width:48px;height:48px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #eee;flex-shrink:0}
+.logo{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #eee;flex-shrink:0}
 .logo img{width:100%;height:100%;object-fit:cover}
 .popup{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:15px}
 .hidden{display:none}
@@ -60,27 +61,11 @@ body{background:#f2f4f7;color:#222}
 </div>
 <div id="auth" class="card" style="margin-top:20px;text-align:center">
 <img src="logo.png" style="width:90px;height:90px;border-radius:50%;margin:auto;display:block;border:3px solid #0a7e07">
-<h2>social-task1</h2><small>Online Only - Complete Tasks • Earn Rewards</small>
+<h2>social-task1</h2><small>Online Only</small>
 <div class="auth-tab" style="margin-top:15px">
 <button id="tabSignIn" class="active" onclick="setAuthMode('signin')">Sign In</button>
 <button id="tabSignUp" class="inactive" onclick="setAuthMode('signup')">Sign Up</button>
-</div>
-<div style="text-align:left">
-<input id="aUser" class="input hidden" placeholder="Username (Sign Up only)">
-<input id="aEmail" class="input" placeholder="Email">
-<input id="aPass" class="input" type="password" placeholder="Password">
-<input id="aRef" class="input hidden" placeholder="Referral Code (Optional)">
-<input id="aCode" class="input hidden" placeholder="Enter code sent to YOUR email">
-<button class="btn" id="authBtn" onclick="handleAuth()">Sign In</button>
-<button class="btn btn-outline" id="switchBtn" onclick="toggleAuthMode()" style="margin-top:8px">Don't have account? Sign Up</button>
-<p id="emailStatus" style="font-size:12px;color:green;margin-top:8px"></p>
-</div>
-</div>
-<div id="home" class="hidden">
-<div class="bal"><div><small>Available</small><br><b id="avBal">₦0</b></div><div><small>Pending</small><br><b id="pdBal">₦0</b></div></div>
-<div class="card" style="background:#fff8e1;border:1px solid #ffe082"><small>⚠️ Task reward → <b>Pending</b> first. Admin approve to Available. Withdrawal Min ₦300 + ₦20 charge ONLY for withdrawal</small></div>
-<div class="card"><h3>🔥 Hot Tasks <span style="float:right;font-size:12px;color:#0a7e07" onclick="showPage('tasks')">View All →</span></h3><div id="homeTasks"></div></div>
- </div>
+</div
  <div id="tasks" class="hidden">
 <div class="card"><h3>All Available Tasks</h3><div id="allTasks"></div>
 <div style="display:flex;gap:10px;margin-top:12px"><button class="btn btn2" id="prevBtn" onclick="changePage(-1)">Prev</button><button class="btn" id="nextBtn" onclick="changePage(1)">Next</button></div>
@@ -90,15 +75,15 @@ body{background:#f2f4f7;color:#222}
 <div class="card">
 <h3>Post New Task</h3>
 <div style="background:#fff8e1;padding:12px;border-radius:10px;margin-bottom:12px;border:1px solid #ffe082">
-<b>Your Deposit Balance: <span id="postDep">₦0</span> (Starts at 0)</b><br><small>Bank: Moniepoint 5895097608 - Ugochi Patricia</small><br>
+<b>Your Deposit Balance: <span id="postDep">₦0</span></b><br><small>Bank: Moniepoint 5895097608 - Ugochi Patricia</small><br>
 <button class="btn" onclick="showPage('deposit')" style="margin-top:8px">Fund Wallet</button>
 </div>
-<label><b>1. Select Platform - Click Logo</b></label>
+<label><b>Select Platform</b></label>
 <div id="appGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0"></div>
 <p id="selectedAppText" style="color:#0a7e07;font-weight:bold;margin-bottom:8px"></p>
 <label>Task Type</label><select id="pType" class="input"></select>
 <label>Task Link</label><input id="pLink" class="input" placeholder="https://...">
-<label>Units / Quantity</label><input id="pQty" type="number" class="input" value="10">
+<label>Units</label><input id="pQty" type="number" class="input" value="10">
 <p id="priceInfo" style="background:#e8f5e9;padding:10px;border-radius:8px;font-size:13px;margin:8px 0"></p>
 <button class="btn" onclick="createTask()">Post Now</button>
 </div>
@@ -107,18 +92,16 @@ body{background:#f2f4f7;color:#222}
 <div id="referral" class="hidden">
 <div class="card">
 <h3>👥 Refer & Earn 10%</h3>
-<div style="background:#e8f5e9;padding:12px;border-radius:10px;margin:10px 0;border:1px solid #0a7e07">
-<b>💰 You will earn 10% from the first withdrawal</b><br>
-<small>You will not get paid till when the person you referred makes their first withdrawal</small>
+<div style="background:#e8f5e9;padding:14px;border-radius:10px;margin:10px 0;border:2px solid #0a7e07">
+<b>💰 You will earn 10% from the first withdrawal</b><br><br>
+<small>You will not get paid till when the person you referred make their first withdrawal</small>
 </div>
-<p><b>Your Referral Code:</b></p>
-<div class="ref-box" id="myRefCode">Loading...</div>
-<p><b>Your Referral Link:</b></p>
-<div class="ref-box" id="myRefLink">Loading...</div>
+<p><b>Your Referral Code:</b></p><div class="ref-box" id="myRefCode">Loading...</div>
+<p><b>Your Referral Link:</b></p><div class="ref-box" id="myRefLink">Loading...</div>
 <button class="btn" onclick="copyRef()">📋 Copy Link</button>
 <div style="display:flex;gap:10px;margin-top:12px">
 <div style="flex:1;background:#f5f5f5;padding:12px;border-radius:10px;text-align:center"><small>Total Referrals</small><br><b id="refCount">0</b></div>
-<div style="flex:1;background:#e8f5e9;padding:12px;border-radius:10px;text-align:center"><small>Referral Earned</small><br><b id="refEarn">₦0</b></div>
+<div style="flex:1;background:#e8f5e9;padding:12px;border-radius:10px;text-align:center"><small>Earned</small><br><b id="refEarn">₦0</b></div>
 </div>
 </div>
 <div class="card"><h4>My Referrals</h4><div id="myReferralsList"></div></div>
@@ -126,16 +109,12 @@ body{background:#f2f4f7;color:#222}
 
 <div id="withdraw" class="hidden">
 <div class="card">
-<h3>💸 Withdraw Funds - ₦20 Charge ONLY for Withdrawal</h3>
+<h3>💸 Withdraw Funds</h3>
 <div style="background:#e8f5e9;padding:12px;border-radius:10px;margin-bottom:12px">
-Available Balance: <b id="wAvBal">₦0</b><br>
-Pending Balance: <b id="wPdBal">₦0</b> (Admin will approve to Available)<br><br>
-<small>Minimum: <b>₦300</b> | Charge: <b>₦20 ONLY for withdrawal</b> → You receive Amount - ₦20</small>
+Available: <b id="wAvBal">₦0</b><br>Pending: <b id="wPdBal">₦0</b> (Need admin approval)<br><br>
+<small>Minimum: <b>₦300</b> | <b>₦20 charge will be collected from every withdrawal</b><br>You receive: Amount - ₦20</small>
 </div>
-<input id="wAccName" class="input" placeholder="Account Name">
-<input id="wAccNum" class="input" placeholder="Account Number">
-<input id="wBank" class="input" placeholder="Bank Name">
-<input id="wAmt" type="number" class="input" placeholder="Amount (Min 300)">
+<input id="wAccName" class="input" placeholder="Account Name"><input id="wAccNum" class="input" placeholder="Account Number"><input id="wBank" class="input" placeholder="Bank Name"><input id="wAmt" type="number" class="input" placeholder="Amount (Min 300)">
 <p id="wInfo" style="background:#fff3cd;padding:8px;border-radius:8px;font-size:13px"></p>
 <button class="btn" onclick="requestWithdraw()">Request Withdrawal (Charge ₦20)</button>
 </div>
@@ -143,26 +122,26 @@ Pending Balance: <b id="wPdBal">₦0</b> (Admin will approve to Available)<br><b
 </div>
 
 <div id="deposit" class="hidden">
-<div class="card"><h3>Deposit Funds - Balance ₦0</h3><p>Bank: Moniepoint<br>Acc: <b>5895097608</b><br>Name: <b>Ugochi Patricia Etumugo</b></p>
+<div class="card"><h3>Deposit Funds</h3><p>Bank: Moniepoint<br>Acc: <b>5895097608</b><br>Name: <b>Ugochi Patricia Etumugo</b></p>
 <p style="background:#e8f5e9;padding:8px;border-radius:8px">Current Deposit: <b id="depBalText">₦0</b></p>
 <input id="dName" class="input" placeholder="Sender account name"><input id="dAmt" type="number" class="input" placeholder="Amount you sent"><button class="btn" onclick="submitDeposit()">I Have Paid</button></div>
 <div class="card"><h4>My Deposits</h4><div id="myDeposits"></div></div>
 </div>
 
 <div id="admin" class="hidden">
-<div class="card" style="border:2px solid #0a7e07"><h3>👑 Admin Panel - ONLY markobinna120@gmail.com</h3><br>
+<div class="card" style="border:2px solid #0a7e07"><h3>👑 Admin Panel</h3><br>
 <button class="btn" onclick="showAdmin('users')">Users</button>
 <button class="btn btn2" onclick="showAdmin('pendingBal')">Pending → Available</button>
 <button class="btn btn2" onclick="showAdmin('allTasksAdmin')">All Tasks</button>
 <button class="btn btn2" onclick="showAdmin('proofs')">Proofs</button>
 <button class="btn btn2" onclick="showAdmin('depositsAdmin')">Deposits</button>
-<button class="btn btn2" onclick="showAdmin('withdrawalsAdmin')">Withdrawals (₦20 charge)</button>
+<button class="btn btn2" onclick="showAdmin('withdrawalsAdmin')">Withdrawals (₦20)</button>
 <button class="btn btn2" onclick="showAdmin('referralsAdmin')">Referrals 10%</button>
 </div><div class="card" id="adminContent"></div>
 </div>
 
 <div id="taskPopup" class="popup"><div class="card" style="width:100%;max-width:400px">
-<h3 id="popTitle"></h3><p id="popInfo" class="hidden" style="background:#fff3cd;padding:10px;border-radius:8px;margin:10px 0;font-size:13px"></p>
+<h3 id="popTitle"></h3>
 <a id="popLink" target="_blank" class="btn" style="display:block;text-align:center;text-decoration:none">👁️ Open Task</a><hr style="margin:12px 0">
 <label>Your Handle</label><input id="popHandle" class="input" placeholder="@handle">
 <label>Proof Screenshot</label><input id="popFile" type="file" accept="image/*" class="input">
@@ -173,18 +152,15 @@ Pending Balance: <b id="wPdBal">₦0</b> (Admin will approve to Available)<br><b
 <div id="successPopup" class="popup"><div class="card" style="width:100%;max-width:380px;text-align:center;border:2px solid #0a7e07">
 <div style="width:70px;height:70px;background:#e8f5e9;border-radius:50%;margin:auto;display:flex;align-items:center;justify-content:center;font-size:40px">✅</div>
 <h2 style="color:#0a7e07;margin-top:12px">Task Submitted!</h2>
-<p style="margin:12px 0;font-size:14px;background:#e8f5e9;padding:12px;border-radius:8px">Task submitted will be reviewed and approved within 24-48 hours</p>
+<p style="margin:12px 0;font-size:14px;background:#e8f5e9;padding:14px;border-radius:8px">Task submitted will be reviewed and approved within 24-48 hours</p>
 <button class="btn" onclick="closePopup('successPopup')">OK</button>
 </div></div>
 
 <div id="lowBalPopup" class="popup"><div class="card" style="width:100%;max-width:380px;text-align:center;border:2px solid #e53935">
-<div style="width:70px;height:70px;background:#ffebee;border-radius:50%;margin:auto;display:flex;align-items:center;justify-content:center;font-size:40px">⚠️</div>
-<h2 style="color:#e53935;margin-top:12px">Low Balance!</h2>
-<p id="lowBalText" style="margin:12px 0;font-size:14px;background:#fff3cd;padding:12px;border-radius:8px"></p>
-<button class="btn" onclick="goToDepositFromLowBal()">💰 Fund Wallet Now</button>
-<button class="btn btn2" onclick="closePopup('lowBalPopup')" style="margin-top:8px">Close</button>
+<h2 style="color:#e53935">Low Balance!</h2><p id="lowBalText" style="margin:12px 0;background:#fff3cd;padding:12px;border-radius:8px"></p>
+<button class="btn" onclick="goToDepositFromLowBal()">💰 Fund Wallet</button><button class="btn btn2" onclick="closePopup('lowBalPopup')" style="margin-top:8px">Close</button>
 </div></div>
 
 <script src="app.js"></script>
 </body>
-                                                                                                                                            </html>
+ </html>
