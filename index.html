@@ -10,30 +10,38 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#f2f4f7;color:#222}
-.top{background:#0a7e07;color:#fff;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:20}
+body{background:#fff;color:#222}
+.top{background:#fff;color:#222;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:20;border-bottom:1px solid #f2f2f2}
 .top-left{display:flex;align-items:center;gap:10px}
-.app-logo-img{width:40px;height:40px;border-radius:50%;border:2px solid #fff;object-fit:cover;background:#000}
-.menu-btn{width:32px;height:24px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer}
-.menu-btn span{display:block;height:3px;background:#fff;border-radius:5px}
+.app-logo-img{width:36px;height:36px;border-radius:50%;object-fit:cover;background:#000}
+.menu-btn{width:36px;height:36px;border-radius:50%;border:1px solid #eee;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:#fff}
+.menu-btn span{display:block;width:16px;height:2px;background:#222;border-radius:5px}
 .join-bar{background:#25D366;color:#fff;text-align:center;padding:10px;font-size:14px;position:sticky;top:54px;z-index:15}
 .join-bar a{background:#fff;color:#25D366;padding:5px 12px;border-radius:20px;text-decoration:none;font-weight:bold;margin-left:8px}
 #sideMenu{position:fixed;top:0;left:-270px;width:260px;height:100%;background:#fff;box-shadow:2px 0 15px rgba(0,0,0,.2);z-index:30;transition:.3s;padding:20px}
 #sideMenu.active{left:0}
 #sideMenu a{display:block;padding:13px 0;border-bottom:1px solid #f0f0f0;text-decoration:none;color:#222;font-weight:600}
 .card{background:#fff;margin:12px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:15px}
-.bal{display:flex;gap:10px;margin:12px}
-.bal div{flex:1;background:#fff;padding:14px;border-radius:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.bal b{color:#0a7e07;font-size:20px}
+.bal-home{background:#e8f5e9;border-radius:16px;padding:18px;margin:12px;border:1px solid #c8e6c9}
+.bal-home b{font-size:30px}
+.withdraw-green{background:#0a7e07;color:#fff;border:none;padding:14px;border-radius:30px;width:100%;font-weight:bold;font-size:16px;margin-top:14px;cursor:pointer}
 .btn{background:#0a7e07;color:#fff;border:none;padding:13px;border-radius:10px;width:100%;font-weight:bold;font-size:15px;cursor:pointer;margin-top:8px}
 .btn2{background:#222}
 .btn-outline{background:#fff;color:#0a7e07;border:2px solid #0a7e07}
 .btn-approve{background:#0a7e07;color:#fff;padding:10px 14px;border:none;border-radius:8px;font-weight:bold;margin:4px;cursor:pointer}
 .btn-reject{background:#e53935;color:#fff;padding:10px 14px;border:none;border-radius:8px;font-weight:bold;margin:4px;cursor:pointer}
 .input{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin:6px 0}
-.task{background:#fff;border-radius:12px;padding:12px;margin:8px 0;display:flex;align-items:center;gap:12px;border:1px solid #eee}
-.logo{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #eee;flex-shrink:0}
-.logo img{width:100%;height:100%;object-fit:cover}
+.task-fansup{background:#fff;border:1px solid #eee;border-radius:16px;padding:14px;margin:10px 0}
+.task-top{display:flex;gap:12px;align-items:flex-start}
+.task-logo{width:48px;height:48px;border-radius:14px;border:1px solid #eee;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff;flex-shrink:0}
+.task-logo img{width:70%;height:70%;object-fit:contain}
+.task-meta{font-size:12px;color:#888}
+.task-name{font-weight:800;font-size:15px;margin:2px 0}
+.task-badges{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.badge-gray{background:#f3f3f3;padding:5px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.task-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.earn-text b{color:#0a7e07;font-size:16px}
+.start-btn{border:1px solid #0a7e07;background:#fff;color:#0a7e07;padding:8px 16px;border-radius:20px;font-weight:bold;cursor:pointer}
 .popup{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:15px}
 .hidden{display:none}
 .badge{background:#e8f5e9;color:#0a7e07;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:bold}
@@ -42,10 +50,13 @@ body{background:#f2f4f7;color:#222}
 .active{background:#0a7e07;color:#fff;border:2px solid #0a7e07}
 .inactive{background:#fff;color:#0a7e07;border:2px solid #0a7e07}
 .ref-box{background:#e8f5e9;border:1px dashed #0a7e07;padding:12px;border-radius:10px;word-break:break-all;margin:10px 0}
+.home-header{display:flex;justify-content:space-between;align-items:center;padding:16px 12px 0 12px}
+.home-header h1{font-size:28px;font-weight:900}
+.plus-btn{width:38px;height:38px;background:#0a7e07;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;border:none;cursor:pointer}
 </style>
 </head>
 <body>
-<div class="top"><div class="top-left"><img src="logo.png" class="app-logo-img"><div><b>social-task1</b><br><small style="font-size:10px">COMPLETE • EARN • WITHDRAW</small></div></div><div class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span></div></div>
+<div class="top"><div class="top-left"><img src="logo.png" class="app-logo-img"><div><b style="color:#0a7e07">social</b>-task1</div></div><div style="display:flex;gap:10px"><div style="width:36px;height:36px;border-radius:50%;border:1px solid #eee;display:flex;align-items:center;justify-content:center">🔔</div><div class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span></div></div></div>
 <div class="join-bar">📢 Official Group <a href="https://chat.whatsapp.com/LYlXUpdqiL24XQ42rtZCl1?s=cl&p=a&mlu=4&ilr=4" target="_blank">Join WhatsApp</a></div>
 <div id="sideMenu">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:15px"><img src="logo.png" style="width:42px;height:42px;border-radius:50%"><b>social-task1</b></div>
@@ -53,8 +64,8 @@ body{background:#f2f4f7;color:#222}
 <a href="#" onclick="showPage('tasks');toggleMenu()">📋 All Tasks</a>
 <a href="#" onclick="showPage('post');toggleMenu()">➕ Post Task</a>
 <a href="#" onclick="showPage('referral');toggleMenu()">👥 Refer & Earn 10%</a>
-<a href="#" onclick="showPage('withdraw');toggleMenu()">💸 Withdraw (Min ₦300)</a>
-<a href="#" onclick="showPage('deposit');toggleMenu()">💰 Deposit - ₦0</a>
+<a href="#" onclick="showPage('withdraw');toggleMenu()">💸 Withdrawal</a>
+<a href="#" onclick="showPage('deposit');toggleMenu()">💰 Deposit - <span id="menuDep">₦0</span></a>
 <a href="https://chat.whatsapp.com/LYlXUpdqiL24XQ42rtZCl1?s=cl&p=a&mlu=4&ilr=4" target="_blank" style="color:#25D366">💬 Join Group</a>
 <a href="#" id="adminLink" class="hidden" style="display:none" onclick="showPage('admin');toggleMenu()">👑 Admin Panel</a>
 <a href="#" onclick="logout()">🚪 Logout</a>
@@ -65,7 +76,31 @@ body{background:#f2f4f7;color:#222}
 <div class="auth-tab" style="margin-top:15px">
 <button id="tabSignIn" class="active" onclick="setAuthMode('signin')">Sign In</button>
 <button id="tabSignUp" class="inactive" onclick="setAuthMode('signup')">Sign Up</button>
-</div
+</div>
+<div style="text-align:left">
+<input id="aUser" class="input hidden" placeholder="Username (Sign Up only)">
+<input id="aEmail" class="input" placeholder="Email">
+<input id="aPass" class="input" type="password" placeholder="Password">
+<input id="aRef" class="input hidden" placeholder="Referral Code (Optional)">
+<input id="aCode" class="input hidden" placeholder="Enter code sent to YOUR email">
+<button class="btn" id="authBtn" onclick="handleAuth()">Sign In</button>
+<button class="btn btn-outline" id="switchBtn" onclick="toggleAuthMode()" style="margin-top:8px">Don't have account? Sign Up</button>
+<p id="emailStatus" style="font-size:12px;color:green;margin-top:8px"></p>
+</div>
+</div>
+<div id="home" class="hidden">
+<div class="home-header"><h1>Home</h1><button class="plus-btn" onclick="showPage('post')">+</button></div>
+<div class="bal-home">
+<small>Earning balance ⓘ</small><br>
+<b id="avBal">₦0</b>
+<div style="margin-top:10px"><small>Pending balance: <b id="pdBal" style="font-size:14px">₦0</b></small></div>
+<button class="withdraw-green" onclick="showPage('withdraw')">↗ Withdraw</button>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px">
+<h3 style="font-weight:800">Suggested tasks</h3><small style="color:#0a7e07;font-weight:bold;cursor:pointer" onclick="showPage('tasks')">View more ›</small>
+</div>
+<div id="homeTasks" style="padding:0 12px"></div>
+ </div>
  <div id="tasks" class="hidden">
 <div class="card"><h3>All Available Tasks</h3><div id="allTasks"></div>
 <div style="display:flex;gap:10px;margin-top:12px"><button class="btn btn2" id="prevBtn" onclick="changePage(-1)">Prev</button><button class="btn" id="nextBtn" onclick="changePage(1)">Next</button></div>
@@ -74,7 +109,7 @@ body{background:#f2f4f7;color:#222}
 <div id="post" class="hidden">
 <div class="card">
 <h3>Post New Task</h3>
-<div style="background:#fff8e1;padding:12px;border-radius:10px;margin-bottom:12px;border:1px solid #ffe082">
+<div style="background:#e8f5e9;padding:12px;border-radius:10px;margin-bottom:12px;border:1px solid #c8e6c9">
 <b>Your Deposit Balance: <span id="postDep">₦0</span></b><br><small>Bank: Moniepoint 5895097608 - Ugochi Patricia</small><br>
 <button class="btn" onclick="showPage('deposit')" style="margin-top:8px">Fund Wallet</button>
 </div>
@@ -109,12 +144,15 @@ body{background:#f2f4f7;color:#222}
 
 <div id="withdraw" class="hidden">
 <div class="card">
-<h3>💸 Withdraw Funds</h3>
+<h3>💸 Withdrawal</h3>
 <div style="background:#e8f5e9;padding:12px;border-radius:10px;margin-bottom:12px">
 Available: <b id="wAvBal">₦0</b><br>Pending: <b id="wPdBal">₦0</b> (Need admin approval)<br><br>
 <small>Minimum: <b>₦300</b> | <b>₦20 charge will be collected from every withdrawal</b><br>You receive: Amount - ₦20</small>
 </div>
-<input id="wAccName" class="input" placeholder="Account Name"><input id="wAccNum" class="input" placeholder="Account Number"><input id="wBank" class="input" placeholder="Bank Name"><input id="wAmt" type="number" class="input" placeholder="Amount (Min 300)">
+<label><b>Account Name</b></label><input id="wAccName" class="input" placeholder="Your account name">
+<label><b>Account Number</b></label><input id="wAccNum" class="input" placeholder="Your account number">
+<label><b>Bank Name</b></label><input id="wBank" class="input" placeholder="e.g Moniepoint, Opay, First Bank">
+<label><b>Amount</b></label><input id="wAmt" type="number" class="input" placeholder="Amount (Min 300)">
 <p id="wInfo" style="background:#fff3cd;padding:8px;border-radius:8px;font-size:13px"></p>
 <button class="btn" onclick="requestWithdraw()">Request Withdrawal (Charge ₦20)</button>
 </div>
@@ -157,10 +195,11 @@ Available: <b id="wAvBal">₦0</b><br>Pending: <b id="wPdBal">₦0</b> (Need adm
 </div></div>
 
 <div id="lowBalPopup" class="popup"><div class="card" style="width:100%;max-width:380px;text-align:center;border:2px solid #e53935">
-<h2 style="color:#e53935">Low Balance!</h2><p id="lowBalText" style="margin:12px 0;background:#fff3cd;padding:12px;border-radius:8px"></p>
-<button class="btn" onclick="goToDepositFromLowBal()">💰 Fund Wallet</button><button class="btn btn2" onclick="closePopup('lowBalPopup')" style="margin-top:8px">Close</button>
+<h2 style="color:#e53935">⚠️ Insufficient Balance</h2>
+<p id="lowBalText" style="margin:12px 0;background:#fff3cd;padding:12px;border-radius:8px;line-height:1.6"></p>
+<button class="btn" onclick="goToDepositFromLowBal()">💰 Fund Wallet Now</button><button class="btn btn2" onclick="closePopup('lowBalPopup')" style="margin-top:8px">Close</button>
 </div></div>
 
 <script src="app.js"></script>
 </body>
- </html>
+                                                                                                                                                                                             </html>
