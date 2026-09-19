@@ -69,7 +69,7 @@ body{background:#f2f4f7;color:#222}
 <input id="aUser" class="input hidden" placeholder="Username (for Sign Up only)">
 <input id="aEmail" class="input" placeholder="Email">
 <input id="aPass" class="input" type="password" placeholder="Password">
-<input id="aCode" class="input hidden" placeholder="Enter code sent to email (Sign Up only)">
+<input id="aCode" class="input hidden" placeholder="Enter code sent to YOUR email (Sign Up only)">
 <button class="btn" id="authBtn" onclick="handleAuth()">Sign In</button>
 <button class="btn btn-outline" id="switchBtn" onclick="toggleAuthMode()" style="margin-top:8px">Don't have account? Sign Up</button>
 <p id="emailStatus" style="font-size:12px;color:green;margin-top:8px"></p>
@@ -78,9 +78,9 @@ body{background:#f2f4f7;color:#222}
 <div id="home" class="hidden">
 <div class="bal"><div><small>Available</small><br><b id="avBal">₦0</b></div><div><small>Pending</small><br><b id="pdBal">₦0</b></div></div>
 <div class="card"><h3>🔥 Hot Tasks <span style="float:right;font-size:12px;color:#0a7e07" onclick="showPage('tasks')">View All →</span></h3><div id="homeTasks"></div></div>
-  </div>
+ </div>
   <div id="tasks" class="hidden">
-<div class="card"><h3>All Available Tasks - Auto Delete After Done</h3><div id="allTasks"></div>
+<div class="card"><h3>All Available Tasks</h3><div id="allTasks"></div>
 <div style="display:flex;gap:10px;margin-top:12px"><button class="btn btn2" id="prevBtn" onclick="changePage(-1)">Prev</button><button class="btn" id="nextBtn" onclick="changePage(1)">Next</button></div>
 </div></div>
 
@@ -142,3 +142,4 @@ body{background:#f2f4f7;color:#222}
 <script src="app.js"></script>
 </body>
   </html>
+                                                                        
